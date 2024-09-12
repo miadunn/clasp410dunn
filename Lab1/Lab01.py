@@ -10,8 +10,9 @@ To get solution for lab 1: run these commands:
 
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.colors import ListedColormap
 
-plt.style.use('fivethirtyeight')
+forest_cmap = ListedColormap(['tan', 'darkgreen', 'crimson'])
 
 def fire_spread(nNorth=3, nEast=3, maxiter=4, pspread=1.0):
     '''
@@ -37,9 +38,10 @@ def fire_spread(nNorth=3, nEast=3, maxiter=4, pspread=1.0):
 
     # Plot initial condition
     fig, ax = plt.subplots(1, 1)
-    contour = ax.matshow(forest[0, :, :], vmin=1, vmax=3)
+    contour = ax.matshow(forest[0, :, :],cmap=forest_cmap, vmin=1, vmax=3)
     ax.set_title(f'Iteration = {0:03d}')
     plt.colorbar(contour, ax=ax)
+    fig.savefig('inital_conditions.png')
 
     # Propagate the solution
     for k in range(maxiter-1):
@@ -55,12 +57,16 @@ def fire_spread(nNorth=3, nEast=3, maxiter=4, pspread=1.0):
         forest[k+1, 1:, :][doburn] = 3
 
         #Burn in each cardinal direction from south to north.
-        for i in range(1, nNorth):
-            for j in range(nEast):
+        doburn = (forest[k, :-1, :] == 3) & (forest[k, :-1, :] == 2) & \
+            (ignite[1:, :] <= pspread)
+        forest[k+1, :-1, :][doburn] = 3
+
+        #for i in range(1, nNorth):
+            #for j in range(nEast):
                 # is the current patch burning AND adjacent forested?
-                if (forest[k, i, j] == 3) & (forest[k, i-1, j] == 2): 
+                #if (forest[k, i, j] == 3) & (forest[k, i-1, j] == 2): 
                     #spread fire to new square:
-                    forest[k+1, i-1, j] = 3                
+                    #forest[k+1, i-1, j] = 3                
 
         #Burn in each cardinal direction from west to east.
         for i in range(nNorth):
@@ -85,7 +91,7 @@ def fire_spread(nNorth=3, nEast=3, maxiter=4, pspread=1.0):
 
         # plot initial condition
         fig, ax = plt.subplots(1,1)
-        contour = ax.matshow(forest[k+1, :, :], vmin=1, vmax=3)
+        contour = ax.matshow(forest[k+1, :, :], cmap=forest_cmap, vmin=1, vmax=3)
         ax.set_title(f'Iteration = {k+1:03d}')
         plt.colorbar(contour, ax=ax)
 
