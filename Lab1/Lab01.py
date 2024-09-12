@@ -57,16 +57,16 @@ def fire_spread(nNorth=3, nEast=3, maxiter=4, pspread=1.0):
         forest[k+1, 1:, :][doburn] = 3
 
         #Burn in each cardinal direction from south to north.
-        doburn = (forest[k, :-1, :] == 3) & (forest[k, :-1, :] == 2) & \
-            (ignite[1:, :] <= pspread)
-        forest[k+1, :-1, :][doburn] = 3
+        #doburn = (forest[k, :-1, :] == 3) & (forest[k, :-1, :] == 2) & \
+            #(ignite[1:, :] <= pspread)
+        #forest[k+1, :-1, :][doburn] = 3
 
-        #for i in range(1, nNorth):
-            #for j in range(nEast):
+        for i in range(1, nNorth):
+            for j in range(nEast):
                 # is the current patch burning AND adjacent forested?
-                #if (forest[k, i, j] == 3) & (forest[k, i-1, j] == 2): 
+                if (forest[k, i, j] == 3) & (forest[k, i-1, j] == 2): 
                     #spread fire to new square:
-                    #forest[k+1, i-1, j] = 3                
+                    forest[k+1, i-1, j] = 3                
 
         #Burn in each cardinal direction from west to east.
         for i in range(nNorth):
