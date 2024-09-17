@@ -1,11 +1,18 @@
 #!/usr/bin/env python3
 
 '''
-This file contains tools and scripts for completing Lab 1 for CLaSP 410.
-To reproduce the plots shown in the lab report, do this...
-
-This file performs fire/disease spread simulations. 
+This file performs fire/disease spread simulations for Lab 1. 
 To get solution for lab 1: run these commands:
+
+    main function tests:
+        spread_sim()
+        spread_sim(nEast=5)
+
+    helper functions for problems 2 and 3:
+        explore_burnrate()
+        vary_burn()
+        explore_survivalrate()
+        vary_immune()
 '''
 # import needed packages
 import numpy as np
@@ -16,7 +23,7 @@ from matplotlib.colors import ListedColormap
 forest_cmap = ListedColormap(['tan', 'darkgreen', 'crimson'])
 disease_cmap = ListedColormap(['black', 'blue', 'darkgreen', 'crimson'])
 
-def spread_sim(simtype='fire', nNorth=3, nEast=3, maxiter=4, pspread=1.0, pbare=0.0, pstart=0.0, pfatal=0.0):
+def spread_sim(simtype='fire', nNorth=3, nEast=3, maxiter=5, pspread=1.0, pbare=0.0, pstart=0.0, pfatal=0.0):
     '''
     This function performs a fire/disease spread simulation.
 
@@ -102,7 +109,7 @@ def spread_sim(simtype='fire', nNorth=3, nEast=3, maxiter=4, pspread=1.0, pbare=
         contour = ax.matshow(grid[0, :, :],cmap=disease_cmap, vmin=0, vmax=3)
     ax.set_title(f'Iteration = {0:03d}')
     plt.colorbar(contour, ax=ax)
-    fig.savefig('inital_conditions.png')
+    fig.savefig('initial_conditions.png')
 
     # Propagate the solution
     for k in range(maxiter-1):
@@ -433,6 +440,7 @@ def vary_immune(nNorth=200, nEast=200, maxiter=500, pstart=0.0005):
 
     ax2.plot(prob, healthy_percent, color='green', label='% Healthy Cells')
     ax2.plot(prob, immune_percent, color='orange', label='% Immune cells')
+    ax2.plot(prob, dead_percent, color='black', label='% Dead Cells')
 
     ax2.set_ylim(-1, 101)
     ax2.tick_params(axis='y')
