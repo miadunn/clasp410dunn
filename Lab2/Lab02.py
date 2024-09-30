@@ -174,7 +174,7 @@ def recreate(dt_comp=1, dt_pp=0.05):
     '''
     # run both methods for competition model
     t_euler, N_euler = euler_solve(dNdt_comp, N1_init=0.3, N2_init=0.6, dt=dt_comp)
-    t_rk8, N1_rk8, N2_rk8 = solve_rk8(dNdt_comp, N1_init=0.3, N2_init=0.6, dt=dt_comp)
+    t_rk8, N1_rk8, N2_rk8 = solve_rk8(dNdt_comp, N1_init=0.3, N2_init=0.6)
     
     # Plot the results
     fig, ax = plt.subplots(1,2)
@@ -189,7 +189,7 @@ def recreate(dt_comp=1, dt_pp=0.05):
 
     # run both methods for predator-prey model
     t_euler_pp, N_euler_pp = euler_solve(dNdt_pp, N1_init=0.3, N2_init=0.6, dt=dt_pp)
-    t_rk8_pp, N1_rk8_pp, N2_rk8_pp = solve_rk8(dNdt_pp, N1_init=0.3, N2_init=0.6, dt=dt_pp)
+    t_rk8_pp, N1_rk8_pp, N2_rk8_pp = solve_rk8(dNdt_pp, N1_init=0.3, N2_init=0.6)
     
     # Plot the results
     ax[1].plot(t_euler_pp, N_euler_pp[0, :], label='Euler N1', color='blue')
@@ -219,8 +219,8 @@ def vary_time(dt_comp=1, dt_pp=0.05):
     '''
 
     # dt for rk8 doesn't change, so calculate it for all euler dt changes
-    t_rk8, N1_rk8, N2_rk8 = solve_rk8(dNdt_comp, N1_init=0.3, N2_init=0.6, dt=dt_comp)
-    t_rk8_pp, N1_rk8_pp, N2_rk8_pp = solve_rk8(dNdt_pp, N1_init=0.3, N2_init=0.6, dt=dt_pp)
+    t_rk8, N1_rk8, N2_rk8 = solve_rk8(dNdt_comp, N1_init=0.3, N2_init=0.6)
+    t_rk8_pp, N1_rk8_pp, N2_rk8_pp = solve_rk8(dNdt_pp, N1_init=0.3, N2_init=0.6)
 
     # euler dt = original
     t_euler, N_euler = euler_solve(dNdt_comp, N1_init=0.3, N2_init=0.6, dt=dt_comp)
@@ -237,63 +237,82 @@ def vary_time(dt_comp=1, dt_pp=0.05):
     # euler dt = tenth
     t_euler_tenth, N_euler_tenth = euler_solve(dNdt_comp, N1_init=0.3, N2_init=0.6, dt=dt_comp*0.1)
     t_euler_pp_tenth, N_euler_pp_tenth = euler_solve(dNdt_pp, N1_init=0.3, N2_init=0.6, dt=dt_pp*0.1)
+
+    # euler dt = tenth
+    t_euler_hund, N_euler_hund = euler_solve(dNdt_comp, N1_init=0.3, N2_init=0.6, dt=dt_comp*0.01)
+    t_euler_pp_hund, N_euler_pp_hund = euler_solve(dNdt_pp, N1_init=0.3, N2_init=0.6, dt=dt_pp*0.01)
     
     # Plot the results
-    fig, ax = plt.subplots(4,2)
+    fig, ax = plt.subplots(5,2, figsize=(8,8))
     ax[0, 0].plot(t_euler, N_euler[0, :], label='Euler N1', color='blue')
     ax[0, 0].plot(t_euler, N_euler[1, :], label='Euler N2', color='red')
-    ax[0, 0].plot(t_rk8, N1_rk8, label='RK8 N2', color='blue', linestyle='dotted')
+    ax[0, 0].plot(t_rk8, N1_rk8, label='RK8 N1', color='blue', linestyle='dotted')
     ax[0, 0].plot(t_rk8, N2_rk8, label='RK8 N2', color='red', linestyle='dotted')
     ax[0, 0].set_title(f'dt = {dt_comp}')
     
     ax[0, 1].plot(t_euler_pp, N_euler_pp[0, :], label='Euler N1', color='blue')
     ax[0, 1].plot(t_euler_pp, N_euler_pp[1, :], label='Euler N2', color='red')
-    ax[0, 1].plot(t_rk8_pp, N1_rk8_pp, label='RK8 N2', color='blue', linestyle='dotted')
+    ax[0, 1].plot(t_rk8_pp, N1_rk8_pp, label='RK8 N1', color='blue', linestyle='dotted')
     ax[0, 1].plot(t_rk8_pp, N2_rk8_pp, label='RK8 N2', color='red', linestyle='dotted')
     ax[0, 1].set_title(f'dt = {dt_pp}')
 
     ax[1, 0].plot(t_euler_half, N_euler_half[0, :], label='Euler N1', color='blue')
     ax[1, 0].plot(t_euler_half, N_euler_half[1, :], label='Euler N2', color='red')
-    ax[1, 0].plot(t_rk8, N1_rk8, label='RK8 N2', color='blue', linestyle='dotted')
+    ax[1, 0].plot(t_rk8, N1_rk8, label='RK8 N1', color='blue', linestyle='dotted')
     ax[1, 0].plot(t_rk8, N2_rk8, label='RK8 N2', color='red', linestyle='dotted')
     ax[1, 0].set_title(f'dt = {dt_comp*0.5}')
 
     ax[1, 1].plot(t_euler_pp_half, N_euler_pp_half[0, :], label='Euler N1', color='blue')
     ax[1, 1].plot(t_euler_pp_half, N_euler_pp_half[1, :], label='Euler N2', color='red')
-    ax[1, 1].plot(t_rk8_pp, N1_rk8_pp, label='RK8 N2', color='blue', linestyle='dotted')
+    ax[1, 1].plot(t_rk8_pp, N1_rk8_pp, label='RK8 N1', color='blue', linestyle='dotted')
     ax[1, 1].plot(t_rk8_pp, N2_rk8_pp, label='RK8 N2', color='red', linestyle='dotted')
     ax[1, 1].set_title(f'dt = {dt_pp*0.5}')
 
     ax[2, 0].plot(t_euler_quart, N_euler_quart[0, :], label='Euler N1', color='blue')
     ax[2, 0].plot(t_euler_quart, N_euler_quart[1, :], label='Euler N2', color='red')
-    ax[2, 0].plot(t_rk8, N1_rk8, label='RK8 N2', color='blue', linestyle='dotted')
+    ax[2, 0].plot(t_rk8, N1_rk8, label='RK8 N1', color='blue', linestyle='dotted')
     ax[2, 0].plot(t_rk8, N2_rk8, label='RK8 N2', color='red', linestyle='dotted')
     ax[2, 0].set_title(f'dt = {dt_comp*0.25}')
 
     ax[2, 1].plot(t_euler_pp_quart, N_euler_pp_quart[0, :], label='Euler N1', color='blue')
     ax[2, 1].plot(t_euler_pp_quart, N_euler_pp_quart[1, :], label='Euler N2', color='red')
-    ax[2, 1].plot(t_rk8_pp, N1_rk8_pp, label='RK8 N2', color='blue', linestyle='dotted')
+    ax[2, 1].plot(t_rk8_pp, N1_rk8_pp, label='RK8 N1', color='blue', linestyle='dotted')
     ax[2, 1].plot(t_rk8_pp, N2_rk8_pp, label='RK8 N2', color='red', linestyle='dotted')
     ax[2, 1].set_title(f'dt = {dt_pp*0.25}')
 
     ax[3, 0].plot(t_euler_tenth, N_euler_tenth[0, :], label='Euler N1', color='blue')
     ax[3, 0].plot(t_euler_tenth, N_euler_tenth[1, :], label='Euler N2', color='red')
-    ax[3, 0].plot(t_rk8, N1_rk8, label='RK8 N2', color='blue', linestyle='dotted')
+    ax[3, 0].plot(t_rk8, N1_rk8, label='RK8 N1', color='blue', linestyle='dotted')
     ax[3, 0].plot(t_rk8, N2_rk8, label='RK8 N2', color='red', linestyle='dotted')
     ax[3, 0].set_title(f'dt = {dt_comp*0.1}')
 
     ax[3, 1].plot(t_euler_pp_tenth, N_euler_pp_tenth[0, :], label='Euler N1', color='blue')
     ax[3, 1].plot(t_euler_pp_tenth, N_euler_pp_tenth[1, :], label='Euler N2', color='red')
-    ax[3, 1].plot(t_rk8_pp, N1_rk8_pp, label='RK8 N2', color='blue', linestyle='dotted')
+    ax[3, 1].plot(t_rk8_pp, N1_rk8_pp, label='RK8 N1', color='blue', linestyle='dotted')
     ax[3, 1].plot(t_rk8_pp, N2_rk8_pp, label='RK8 N2', color='red', linestyle='dotted')
     ax[3, 1].set_title(f'dt = {round(dt_pp*0.1,3)}')
 
+    ax[4, 0].plot(t_euler_hund, N_euler_hund[0, :], label='Euler N1', color='blue')
+    ax[4, 0].plot(t_euler_hund, N_euler_hund[1, :], label='Euler N2', color='red')
+    ax[4, 0].plot(t_rk8, N1_rk8, label='RK8 N1', color='blue', linestyle='dotted')
+    ax[4, 0].plot(t_rk8, N2_rk8, label='RK8 N2', color='red', linestyle='dotted')
+    ax[4, 0].set_title(f'dt = {dt_comp*0.01}')
+
+    ax[4, 1].plot(t_euler_pp_hund, N_euler_pp_hund[0, :], label='Euler N1', color='blue')
+    ax[4, 1].plot(t_euler_pp_hund, N_euler_pp_hund[1, :], label='Euler N2', color='red')
+    ax[4, 1].plot(t_rk8_pp, N1_rk8_pp, label='RK8 N1', color='blue', linestyle='dotted')
+    ax[4, 1].plot(t_rk8_pp, N2_rk8_pp, label='RK8 N2', color='red', linestyle='dotted')
+    ax[4, 1].set_title(f'dt = {round(dt_pp*0.01,3)}')
+
     # add title and legend, then save
     plt.suptitle('Competition and Predator-Prey Models')
-    plt.legend(bbox_to_anchor=(0, 0), loc="lower left", 
-                bbox_transform=fig.transFigure, ncol=4)
-    fig.tight_layout()
-    plt.savefig('part1.png')
+    fig.supxlabel('time (years)')
+    fig.supylabel('Population Capacity')
+    # make room at the top for legend
+    handles, labels = ax[0, 0].get_legend_handles_labels()
+    fig.legend(handles, labels, loc='upper center', bbox_to_anchor=(0.5, 0.95), ncol=4)
+    fig.tight_layout(rect=[0, 0, 1, 0.95])
+    plt.savefig('varying_time.png')
 
 
 def vary_ic(model='comp', N1_init=0.3, N2_init=0.6, a=1, b=2, c=1, d=3):
@@ -316,30 +335,32 @@ def vary_ic(model='comp', N1_init=0.3, N2_init=0.6, a=1, b=2, c=1, d=3):
     if model == 'comp':
         func = dNdt_comp
         dt = 1
+        title = 'Competition Model with Varying Initial Conditions'
         fig_name = 'Comp_init_cond.png'
     if model == 'pp':
         func = dNdt_pp
         dt = 0.05
+        title = 'Predator-Prey Model with Varying Initial Conditions'
         fig_name = 'PP_init_cond.png'
 
     # run solvers for N1_init slightly smaller
     teN1_1, NeN1_1 = euler_solve(func, N1_init=N1_init-0.1, N2_init=N2_init, dt=dt, t_final=100)
-    trN1_1, NrN1_sm, NrN2_1 = solve_rk8(func, N1_init=N1_init-0.1, N2_init=N2_init, dt= dt, t_final=100,\
+    trN1_1, NrN1_sm, NrN2_1 = solve_rk8(func, N1_init=N1_init-0.1, N2_init=N2_init, t_final=100,\
                                       a=a, b=b, c=c, d=d)
     
     # run solvers for N1_init slightly bigger
     teN1_2, NeN1_2 = euler_solve(func, N1_init=N1_init+0.1, N2_init=N2_init, dt=dt, t_final=100)
-    trN1_2, NrN1_bg, NrN2_2 = solve_rk8(func, N1_init=N1_init+0.1, N2_init=N2_init, dt= dt, t_final=100,\
+    trN1_2, NrN1_bg, NrN2_2 = solve_rk8(func, N1_init=N1_init+0.1, N2_init=N2_init, t_final=100,\
                                       a=a, b=b, c=c, d=d)
     
         # run solvers for N2_init slightly smaller
     teN2_1, NeN2_1 = euler_solve(func, N1_init=N1_init, N2_init=N2_init-0.1, dt=dt, t_final=100)
-    trN2_1, NrN1_1, NrN2_sm = solve_rk8(func, N1_init=N1_init, N2_init=N2_init-0.1, dt= dt, t_final=100,\
+    trN2_1, NrN1_1, NrN2_sm = solve_rk8(func, N1_init=N1_init, N2_init=N2_init-0.1, t_final=100,\
                                       a=a, b=b, c=c, d=d)
     
     # run solvers for N2_init slightly bigger
     teN2_2, NeN2_2 = euler_solve(func, N1_init=N1_init, N2_init=N2_init+0.1, dt=dt, t_final=100)
-    trN2_2, NrN1_2, NrN2_bg = solve_rk8(func, N1_init=N1_init, N2_init=N2_init+0.1, dt= dt, t_final=100,\
+    trN2_2, NrN1_2, NrN2_bg = solve_rk8(func, N1_init=N1_init, N2_init=N2_init+0.1, t_final=100,\
                                       a=a, b=b, c=c, d=d)
     
     # plot changes
@@ -368,34 +389,47 @@ def vary_ic(model='comp', N1_init=0.3, N2_init=0.6, a=1, b=2, c=1, d=3):
     ax[1, 1].plot(trN2_2, NrN2_bg, label='RK8 N2', color='red', linestyle='dotted')
     ax[1, 1].set_title(f'N1 = {N1_init}, N2 = {N2_init + 0.1}')
 
-    fig.tight_layout()
+    plt.suptitle(title)
+    fig.supxlabel('Time (years)')
+    fig.supylabel('Population Capacity')
+    # make room at the top for legend
+    handles, labels = ax[0, 0].get_legend_handles_labels()
+    fig.legend(handles, labels, loc='upper center', bbox_to_anchor=(0.5, 0.95), ncol=4)
+    fig.tight_layout(rect=[0, 0, 1, 0.95])
     plt.savefig(fig_name)
 
     # for the predator_prey model, also create a phase diagram
     if model == 'pp':
         fig, ax = plt.subplots(2,2)
-        ax[0, 0].plot(NeN1_1[0,:], NeN1_1[1, :], label='Euler', color='red')
-        ax[0, 0].plot(NrN1_sm, NrN2_1, label='RK8', color='blue')
+        ax[0, 0].plot(NeN1_1[0,:], NeN1_1[1, :], label='Euler', color='green')
+        ax[0, 0].plot(NrN1_sm, NrN2_1, label='RK8', color='pink')
         ax[0, 0].set_title(f'N1 = {round(N1_init - 0.1, 2)}, N2 = {N2_init}')
 
-        ax[0, 1].plot(NeN1_2[0,:], NeN1_2[1,:], label='Euler', color='red')
-        ax[0, 1].plot(NrN1_bg, NrN2_2, label='RK8', color='blue')
+        ax[0, 1].plot(NeN1_2[0,:], NeN1_2[1,:], label='Euler', color='green')
+        ax[0, 1].plot(NrN1_bg, NrN2_2, label='RK8', color='pink')
         ax[0, 1].set_title(f'N1 = {N1_init + 0.1}, N2 = {N2_init}')
 
-        ax[1, 0].plot(NeN2_1[0, :], NeN2_1[1, :], label='Euler', color='red')
-        ax[1, 0].plot(NrN1_1, NrN2_sm, label='RK8', color='blue')
+        ax[1, 0].plot(NeN2_1[0, :], NeN2_1[1, :], label='Euler', color='green')
+        ax[1, 0].plot(NrN1_1, NrN2_sm, label='RK8', color='pink')
         ax[1, 0].set_title(f'N1 = {N1_init}, N2 = {N2_init - 0.1}')
 
-        ax[1, 1].plot(NeN2_2[0,:], NeN2_2[1,:], label='Euler', color='red')
-        ax[1, 1].plot(NrN1_2, NrN2_bg, label='RK8', color='blue')
+        ax[1, 1].plot(NeN2_2[0,:], NeN2_2[1,:], label='Euler', color='green')
+        ax[1, 1].plot(NrN1_2, NrN2_bg, label='RK8', color='pink')
         ax[1, 1].set_title(f'N1 = {N1_init}, N2 = {N2_init + 0.1}')
 
-        fig.tight_layout()
+        plt.suptitle('Predator-Prey N1 vs N2 with Varying Initial Conditions')
+        fig.supxlabel('N1 (Prey) Population')
+        fig.supylabel('N2 (Predator) Population')
+        # make room at the top for legend
+        handles, labels = ax[0, 0].get_legend_handles_labels()
+        fig.legend(handles, labels, loc='upper center', bbox_to_anchor=(0.5, 0.95), ncol=4)
+        fig.tight_layout(rect=[0, 0, 1, 0.95])
         plt.savefig('vary_ic_phase_diagram.png')
 
 def vary_coeffs(model='comp', N1_init=0.3, N2_init=0.6, a=1, b=2, c=1, d=3):
     '''
-    This is a function to provide plots for each model when varying coefficients
+    This is a function to provide plots for each model when varying coefficients.
+    If the model type is predator prey, it will also provide a phase diagram.
 
         Parameters
     ----------
@@ -412,10 +446,12 @@ def vary_coeffs(model='comp', N1_init=0.3, N2_init=0.6, a=1, b=2, c=1, d=3):
     if model == 'comp':
         func = dNdt_comp
         dt = 1
+        title = 'Competition Model with Varying Coefficients'
         fig_name = 'Comp_coeffs.png'
     elif model == 'pp':
         func = dNdt_pp
         dt=0.05
+        title = 'Predator-Prey Model with Varying Coefficients'
         fig_name = 'PP_coeffs.png'
 
     # now vary coefficients
@@ -423,17 +459,17 @@ def vary_coeffs(model='comp', N1_init=0.3, N2_init=0.6, a=1, b=2, c=1, d=3):
     teN1, NeN1 = euler_solve(func, N1_init=N1_init, N2_init=N2_init, dt=dt, t_final=100)
     
     # +/- half of a
-    trN1, NrN1, NrN2 = solve_rk8(func, N1_init=N1_init, N2_init=N2_init, dt=dt, t_final=100,\
+    trN1, NrN1, NrN2 = solve_rk8(func, N1_init=N1_init, N2_init=N2_init, t_final=100,\
                                       a=a*0.5, b=b, c=c, d=d)
     
-    fig, ax = plt.subplots(4,2)
+    fig, ax = plt.subplots(4,2, figsize=(8,8))
     ax[0, 0].plot(teN1, NeN1[0, :], label='Euler N1', color='blue')
     ax[0, 0].plot(teN1, NeN1[1, :], label='Euler N2', color='red')
     ax[0, 0].plot(trN1, NrN1, label='RK8 N2', color='blue', linestyle='dotted')
     ax[0, 0].plot(trN1, NrN2, label='RK8 N2', color='red', linestyle='dotted')
     ax[0, 0].set_title(f'a = {a * 0.5}')
 
-    trN1, NrN1, NrN2 = solve_rk8(func, N1_init=N1_init, N2_init=N2_init, dt=dt, t_final=100,\
+    trN1, NrN1, NrN2 = solve_rk8(func, N1_init=N1_init, N2_init=N2_init, t_final=100,\
                                       a=a*1.5, b=b, c=c, d=d)
     
     ax[0, 1].plot(teN1, NeN1[0, :], label='Euler N1', color='blue')
@@ -443,7 +479,7 @@ def vary_coeffs(model='comp', N1_init=0.3, N2_init=0.6, a=1, b=2, c=1, d=3):
     ax[0, 1].set_title(f'a = {a * 1.5}')
 
     # +/- half of b
-    trN1, NrN1, NrN2 = solve_rk8(func, N1_init=N1_init, N2_init=N2_init, dt=dt, t_final=100,\
+    trN1, NrN1, NrN2 = solve_rk8(func, N1_init=N1_init, N2_init=N2_init, t_final=100,\
                                       a=a, b=b*0.5, c=c, d=d)
     
     ax[1, 0].plot(teN1, NeN1[0, :], label='Euler N1', color='blue')
@@ -452,7 +488,7 @@ def vary_coeffs(model='comp', N1_init=0.3, N2_init=0.6, a=1, b=2, c=1, d=3):
     ax[1, 0].plot(trN1, NrN2, label='RK8 N2', color='red', linestyle='dotted')
     ax[1, 0].set_title(f'b = {b * 0.5}')
 
-    trN1, NrN1, NrN2 = solve_rk8(func, N1_init=N1_init, N2_init=N2_init, dt=dt, t_final=100,\
+    trN1, NrN1, NrN2 = solve_rk8(func, N1_init=N1_init, N2_init=N2_init, t_final=100,\
                                       a=a, b=b*1.5, c=c, d=d)
     
     ax[1, 1].plot(teN1, NeN1[0, :], label='Euler N1', color='blue')
@@ -462,7 +498,7 @@ def vary_coeffs(model='comp', N1_init=0.3, N2_init=0.6, a=1, b=2, c=1, d=3):
     ax[1, 1].set_title(f'b = {b * 1.5}')
 
     # +/- half of c
-    trN1, NrN1, NrN2 = solve_rk8(func, N1_init=N1_init, N2_init=N2_init, dt=dt, t_final=100,\
+    trN1, NrN1, NrN2 = solve_rk8(func, N1_init=N1_init, N2_init=N2_init, t_final=100,\
                                       a=a, b=b, c=c*0.5, d=d)
     
     ax[2, 0].plot(teN1, NeN1[0, :], label='Euler N1', color='blue')
@@ -471,7 +507,7 @@ def vary_coeffs(model='comp', N1_init=0.3, N2_init=0.6, a=1, b=2, c=1, d=3):
     ax[2, 0].plot(trN1, NrN2, label='RK8 N2', color='red', linestyle='dotted')
     ax[2, 0].set_title(f'c = {c * 0.5}')
 
-    trN1, NrN1, NrN2 = solve_rk8(func, N1_init=N1_init, N2_init=N2_init, dt=dt, t_final=100,\
+    trN1, NrN1, NrN2 = solve_rk8(func, N1_init=N1_init, N2_init=N2_init, t_final=100,\
                                       a=a, b=b, c=c*1.5, d=d)
     
     ax[2, 1].plot(teN1, NeN1[0, :], label='Euler N1', color='blue')
@@ -481,7 +517,7 @@ def vary_coeffs(model='comp', N1_init=0.3, N2_init=0.6, a=1, b=2, c=1, d=3):
     ax[2, 1].set_title(f'c = {c * 1.5}')
 
     # +/- half of d
-    trN1, NrN1, NrN2 = solve_rk8(func, N1_init=N1_init, N2_init=N2_init, dt=dt, t_final=100,\
+    trN1, NrN1, NrN2 = solve_rk8(func, N1_init=N1_init, N2_init=N2_init, t_final=100,\
                                       a=a, b=b, c=c, d=d*0.5)
     
     ax[3, 0].plot(teN1, NeN1[0, :], label='Euler N1', color='blue')
@@ -490,7 +526,7 @@ def vary_coeffs(model='comp', N1_init=0.3, N2_init=0.6, a=1, b=2, c=1, d=3):
     ax[3, 0].plot(trN1, NrN2, label='RK8 N2', color='red', linestyle='dotted')
     ax[3, 0].set_title(f'd = {d * 0.5}')
 
-    trN1, NrN1, NrN2 = solve_rk8(func, N1_init=N1_init, N2_init=N2_init, dt=dt, t_final=100,\
+    trN1, NrN1, NrN2 = solve_rk8(func, N1_init=N1_init, N2_init=N2_init, t_final=100,\
                                       a=a, b=b, c=c, d=d*1.5)
     
     ax[3, 1].plot(teN1, NeN1[0, :], label='Euler N1', color='blue')
@@ -499,5 +535,110 @@ def vary_coeffs(model='comp', N1_init=0.3, N2_init=0.6, a=1, b=2, c=1, d=3):
     ax[3, 1].plot(trN1, NrN2, label='RK8 N2', color='red', linestyle='dotted')
     ax[3, 1].set_title(f'd = {d * 1.5}')
 
-    plt.tight_layout()
+    plt.suptitle(title)
+    fig.supxlabel('Time (years)')
+    fig.supylabel('Population Capacity')
+    # make room at the top for legend
+    handles, labels = ax[0, 0].get_legend_handles_labels()
+    fig.legend(handles, labels, loc='upper center', bbox_to_anchor=(0.5, 0.95), ncol=4)
+    fig.tight_layout(rect=[0, 0, 1, 0.95])
     plt.savefig(fig_name)
+    plt.savefig(fig_name)
+
+    # for the predator_prey model, also create a phase diagram
+    if model == 'pp':
+        fig, ax = plt.subplots(4,2, figsize=(8,8))
+
+        trN1, NrN1, NrN2 = solve_rk8(func, N1_init=N1_init, N2_init=N2_init, t_final=100,\
+                                      a=a*0.5, b=b, c=c, d=d)
+
+        ax[0, 0].plot(NeN1[0,:], NeN1[1, :], label='Euler', color='red')
+        ax[0, 0].plot(NrN1, NrN2, label='RK8', color='blue')
+        ax[0, 0].set_title(f'a = {a*0.5}')
+
+        trN1, NrN1, NrN2 = solve_rk8(func, N1_init=N1_init, N2_init=N2_init, t_final=100,\
+                                      a=a*1.5, b=b, c=c, d=d)
+
+        ax[0, 1].plot(NeN1[0,:], NeN1[1, :], label='Euler', color='red')
+        ax[0, 1].plot(NrN1, NrN2, label='RK8', color='blue')
+        ax[0, 1].set_title(f'a = {a*1.5}')
+
+        trN1, NrN1, NrN2 = solve_rk8(func, N1_init=N1_init, N2_init=N2_init, t_final=100,\
+                                      a=a, b=b*0.5, c=c, d=d)
+
+        ax[1, 0].plot(NeN1[0,:], NeN1[1, :], label='Euler', color='red')
+        ax[1, 0].plot(NrN1, NrN2, label='RK8', color='blue')
+        ax[1, 0].set_title(f'b = {b*0.5}')
+
+        trN1, NrN1, NrN2 = solve_rk8(func, N1_init=N1_init, N2_init=N2_init, t_final=100,\
+                                      a=a, b=b*1.5, c=c, d=d)
+
+        ax[1, 1].plot(NeN1[0,:], NeN1[1, :], label='Euler', color='red')
+        ax[1, 1].plot(NrN1, NrN2, label='RK8', color='blue')
+        ax[1, 1].set_title(f'b = {b*1.5}')
+
+        trN1, NrN1, NrN2 = solve_rk8(func, N1_init=N1_init, N2_init=N2_init, t_final=100,\
+                                      a=a, b=b, c=c*0.5, d=d)
+
+        ax[2, 0].plot(NeN1[0,:], NeN1[1, :], label='Euler', color='red')
+        ax[2, 0].plot(NrN1, NrN2, label='RK8', color='blue')
+        ax[2, 0].set_title(f'c = {c*0.5}')
+
+        trN1, NrN1, NrN2 = solve_rk8(func, N1_init=N1_init, N2_init=N2_init, t_final=100,\
+                                      a=a, b=b, c=c*1.5, d=d)
+
+        ax[2, 1].plot(NeN1[0,:], NeN1[1, :], label='Euler', color='red')
+        ax[2, 1].plot(NrN1, NrN2, label='RK8', color='blue')
+        ax[2, 1].set_title(f'c = {c*1.5}')
+
+        trN1, NrN1, NrN2 = solve_rk8(func, N1_init=N1_init, N2_init=N2_init, t_final=100,\
+                                      a=a, b=b, c=c, d=d*0.5)
+
+        ax[3, 0].plot(NeN1[0,:], NeN1[1, :], label='Euler', color='red')
+        ax[3, 0].plot(NrN1, NrN2, label='RK8', color='blue')
+        ax[3, 0].set_title(f'd = {d*0.5}')
+
+        trN1, NrN1, NrN2 = solve_rk8(func, N1_init=N1_init, N2_init=N2_init, t_final=100,\
+                                      a=a, b=b, c=c, d=d*1.5)
+
+        ax[3, 1].plot(NeN1[0,:], NeN1[1, :], label='Euler', color='red')
+        ax[3, 1].plot(NrN1, NrN2, label='RK8', color='blue')
+        ax[3, 1].set_title(f'd = {d*1.5}')
+
+        plt.suptitle('Predator-Prey N1 vs N2 with Varying Coefficients')
+        fig.supxlabel('N1 (Prey) Population')
+        fig.supylabel('N2 (Predator) Population')
+        # make room at the top for legend
+        handles, labels = ax[0, 0].get_legend_handles_labels()
+        fig.legend(handles, labels, loc='upper center', bbox_to_anchor=(0.5, 0.95), ncol=4)
+        fig.tight_layout(rect=[0, 0, 1, 0.95])
+        plt.savefig('vary_coeffs_phase_diagram.png')
+
+def phase_comparisons(N1_init=0.3, N2_init=0.6, a=1, b=2, c=1, d=3):
+    '''
+    This is a function to provide a phase diagram for initial conditions. 
+    The figure will be used to compare to changes in initial conditions/coefficients.
+
+    Parameters
+    ----------
+    N1_init : float, default = 0.3
+        Initial population capacity for population 1. In the case of predator-prey, this is the prey population.
+    N2_init : float, default = 0.6
+        Initial population capacity for population 2. In the case of predator-prey, this is the predator population.
+    a, b, c, d : int, defaults = 1, 2, 3, 4
+        Coefficients for Lotka-Volterra equations
+    '''
+    # run solvers for normal conditions
+    teN1, NeN1 = euler_solve(dNdt_pp, N1_init=N1_init, N2_init=N2_init, dt=0.05, t_final=100)
+    trN1, NrN1, NrN2 = solve_rk8(dNdt_pp, N1_init=N1_init, N2_init=N2_init, t_final=100,\
+                                      a=a, b=b, c=c, d=d)
+    
+    fig = plt.figure()
+    plt.plot(NeN1[0,:], NeN1[1, :], label='Euler', color='red')
+    plt.plot(NrN1, NrN2, label='RK8', color='blue')
+    plt.suptitle('Predator-Prey Phase Diagram with Original Conditions')
+    plt.title(f'N1 = {N1_init}, N2 = {N2_init}, a = {a}, b = {b}, c = {c}, d = {d}')
+    plt.xlabel('N1 (Prey) Population')
+    plt.ylabel('N2 (Predator) Population')
+    plt.legend()
+    plt.savefig('phase_diagram_original.png')
