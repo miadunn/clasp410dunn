@@ -14,7 +14,7 @@ Part 2:
 Part 3:
     vary_ic(model='pp')
     vary_coeffs(model='pp')
-
+    phase_comparisons()
 '''
 
 import numpy as np
