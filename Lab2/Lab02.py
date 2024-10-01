@@ -583,8 +583,8 @@ def vary_coeffs(model='comp', N1_init=0.3, N2_init=0.6, a=1, b=2, c=1, d=3):
         trN1, NrN1, NrN2 = solve_rk8(func, N1_init=N1_init, N2_init=N2_init, t_final=100,\
                                       a=a*0.5, b=b, c=c, d=d)
 
-        ax[0, 0].plot(NeN1[0,:], NeN1[1, :], label='Euler', color='red')
-        ax[0, 0].plot(NrN1, NrN2, label='RK8', color='blue')
+        ax[0, 0].plot(NeN1[0,:], NeN1[1, :], label='Euler', color='green')
+        ax[0, 0].plot(NrN1, NrN2, label='RK8', color='pink')
         ax[0, 0].set_title(f'a = {a*0.5}')
 
         teN1, NeN1 = euler_solve(func, N1_init=N1_init, N2_init=N2_init, dt=dt, t_final=100,\
@@ -592,8 +592,8 @@ def vary_coeffs(model='comp', N1_init=0.3, N2_init=0.6, a=1, b=2, c=1, d=3):
         trN1, NrN1, NrN2 = solve_rk8(func, N1_init=N1_init, N2_init=N2_init, t_final=100,\
                                       a=a*1.5, b=b, c=c, d=d)
 
-        ax[0, 1].plot(NeN1[0,:], NeN1[1, :], label='Euler', color='red')
-        ax[0, 1].plot(NrN1, NrN2, label='RK8', color='blue')
+        ax[0, 1].plot(NeN1[0,:], NeN1[1, :], label='Euler', color='green')
+        ax[0, 1].plot(NrN1, NrN2, label='RK8', color='pink')
         ax[0, 1].set_title(f'a = {a*1.5}')
 
         teN1, NeN1 = euler_solve(func, N1_init=N1_init, N2_init=N2_init, dt=dt, t_final=100,\
@@ -601,8 +601,8 @@ def vary_coeffs(model='comp', N1_init=0.3, N2_init=0.6, a=1, b=2, c=1, d=3):
         trN1, NrN1, NrN2 = solve_rk8(func, N1_init=N1_init, N2_init=N2_init, t_final=100,\
                                       a=a, b=b*0.5, c=c, d=d)
 
-        ax[1, 0].plot(NeN1[0,:], NeN1[1, :], label='Euler', color='red')
-        ax[1, 0].plot(NrN1, NrN2, label='RK8', color='blue')
+        ax[1, 0].plot(NeN1[0,:], NeN1[1, :], label='Euler', color='green')
+        ax[1, 0].plot(NrN1, NrN2, label='RK8', color='pink')
         ax[1, 0].set_title(f'b = {b*0.5}')
 
         teN1, NeN1 = euler_solve(func, N1_init=N1_init, N2_init=N2_init, dt=dt, t_final=100,\
@@ -610,8 +610,8 @@ def vary_coeffs(model='comp', N1_init=0.3, N2_init=0.6, a=1, b=2, c=1, d=3):
         trN1, NrN1, NrN2 = solve_rk8(func, N1_init=N1_init, N2_init=N2_init, t_final=100,\
                                       a=a, b=b*1.5, c=c, d=d)
 
-        ax[1, 1].plot(NeN1[0,:], NeN1[1, :], label='Euler', color='red')
-        ax[1, 1].plot(NrN1, NrN2, label='RK8', color='blue')
+        ax[1, 1].plot(NeN1[0,:], NeN1[1, :], label='Euler', color='green')
+        ax[1, 1].plot(NrN1, NrN2, label='RK8', color='pink')
         ax[1, 1].set_title(f'b = {b*1.5}')
 
         teN1, NeN1 = euler_solve(func, N1_init=N1_init, N2_init=N2_init, dt=dt, t_final=100,\
@@ -619,8 +619,8 @@ def vary_coeffs(model='comp', N1_init=0.3, N2_init=0.6, a=1, b=2, c=1, d=3):
         trN1, NrN1, NrN2 = solve_rk8(func, N1_init=N1_init, N2_init=N2_init, t_final=100,\
                                       a=a, b=b, c=c*0.5, d=d)
 
-        ax[2, 0].plot(NeN1[0,:], NeN1[1, :], label='Euler', color='red')
-        ax[2, 0].plot(NrN1, NrN2, label='RK8', color='blue')
+        ax[2, 0].plot(NeN1[0,:], NeN1[1, :], label='Euler', color='green')
+        ax[2, 0].plot(NrN1, NrN2, label='RK8', color='pink')
         ax[2, 0].set_title(f'c = {c*0.5}')
 
         teN1, NeN1 = euler_solve(func, N1_init=N1_init, N2_init=N2_init, dt=dt, t_final=100,\
@@ -628,8 +628,8 @@ def vary_coeffs(model='comp', N1_init=0.3, N2_init=0.6, a=1, b=2, c=1, d=3):
         trN1, NrN1, NrN2 = solve_rk8(func, N1_init=N1_init, N2_init=N2_init, t_final=100,\
                                       a=a, b=b, c=c*1.5, d=d)
 
-        ax[2, 1].plot(NeN1[0,:], NeN1[1, :], label='Euler', color='red')
-        ax[2, 1].plot(NrN1, NrN2, label='RK8', color='blue')
+        ax[2, 1].plot(NeN1[0,:], NeN1[1, :], label='Euler', color='green')
+        ax[2, 1].plot(NrN1, NrN2, label='RK8', color='pink')
         ax[2, 1].set_title(f'c = {c*1.5}')
 
         teN1, NeN1 = euler_solve(func, N1_init=N1_init, N2_init=N2_init, dt=dt, t_final=100,\
@@ -637,8 +637,8 @@ def vary_coeffs(model='comp', N1_init=0.3, N2_init=0.6, a=1, b=2, c=1, d=3):
         trN1, NrN1, NrN2 = solve_rk8(func, N1_init=N1_init, N2_init=N2_init, t_final=100,\
                                       a=a, b=b, c=c, d=d*0.5)
 
-        ax[3, 0].plot(NeN1[0,:], NeN1[1, :], label='Euler', color='red')
-        ax[3, 0].plot(NrN1, NrN2, label='RK8', color='blue')
+        ax[3, 0].plot(NeN1[0,:], NeN1[1, :], label='Euler', color='green')
+        ax[3, 0].plot(NrN1, NrN2, label='RK8', color='pink')
         ax[3, 0].set_title(f'd = {d*0.5}')
 
         teN1, NeN1 = euler_solve(func, N1_init=N1_init, N2_init=N2_init, dt=dt, t_final=100,\
@@ -646,8 +646,8 @@ def vary_coeffs(model='comp', N1_init=0.3, N2_init=0.6, a=1, b=2, c=1, d=3):
         trN1, NrN1, NrN2 = solve_rk8(func, N1_init=N1_init, N2_init=N2_init, t_final=100,\
                                       a=a, b=b, c=c, d=d*1.5)
 
-        ax[3, 1].plot(NeN1[0,:], NeN1[1, :], label='Euler', color='red')
-        ax[3, 1].plot(NrN1, NrN2, label='RK8', color='blue')
+        ax[3, 1].plot(NeN1[0,:], NeN1[1, :], label='Euler', color='green')
+        ax[3, 1].plot(NrN1, NrN2, label='RK8', color='pink')
         ax[3, 1].set_title(f'd = {d*1.5}')
 
         plt.suptitle('Predator-Prey N1 vs N2 with Varying Coefficients')
@@ -680,8 +680,8 @@ def phase_comparisons(N1_init=0.3, N2_init=0.6, a=1, b=2, c=1, d=3):
                                       a=a, b=b, c=c, d=d)
     
     fig = plt.figure()
-    plt.plot(NeN1[0,:], NeN1[1, :], label='Euler', color='red')
-    plt.plot(NrN1, NrN2, label='RK8', color='blue')
+    plt.plot(NeN1[0,:], NeN1[1, :], label='Euler', color='green')
+    plt.plot(NrN1, NrN2, label='RK8', color='pink')
     plt.suptitle('Predator-Prey Phase Diagram with Original Conditions')
     plt.title(f'N1 = {N1_init}, N2 = {N2_init}, a = {a}, b = {b}, c = {c}, d = {d}')
     plt.xlabel('N1 (Prey) Population')
