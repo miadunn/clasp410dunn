@@ -81,7 +81,8 @@ def dNdt_pp(t, N, a=1, b=2, c=1, d=3):
     dN2dt = -c*N[1] + d*N[0]*N[1]
     return dN1dt, dN2dt
 
-def euler_solve(func, N1_init=.5, N2_init=.5, dt=.1, t_final=100.0):
+def euler_solve(func, N1_init=.5, N2_init=.5, dt=.1, t_final=100.0, \
+              a=1, b=2, c=1, d=3):
     '''
     This function solves two ODEs using Euler's method
 
@@ -345,23 +346,19 @@ def vary_ic(model='comp', N1_init=0.3, N2_init=0.6, a=1, b=2, c=1, d=3):
 
     # run solvers for N1_init slightly smaller
     teN1_1, NeN1_1 = euler_solve(func, N1_init=N1_init-0.1, N2_init=N2_init, dt=dt, t_final=100)
-    trN1_1, NrN1_sm, NrN2_1 = solve_rk8(func, N1_init=N1_init-0.1, N2_init=N2_init, t_final=100,\
-                                      a=a, b=b, c=c, d=d)
+    trN1_1, NrN1_sm, NrN2_1 = solve_rk8(func, N1_init=N1_init-0.1, N2_init=N2_init, t_final=100)
     
     # run solvers for N1_init slightly bigger
     teN1_2, NeN1_2 = euler_solve(func, N1_init=N1_init+0.1, N2_init=N2_init, dt=dt, t_final=100)
-    trN1_2, NrN1_bg, NrN2_2 = solve_rk8(func, N1_init=N1_init+0.1, N2_init=N2_init, t_final=100,\
-                                      a=a, b=b, c=c, d=d)
+    trN1_2, NrN1_bg, NrN2_2 = solve_rk8(func, N1_init=N1_init+0.1, N2_init=N2_init, t_final=100)
     
         # run solvers for N2_init slightly smaller
     teN2_1, NeN2_1 = euler_solve(func, N1_init=N1_init, N2_init=N2_init-0.1, dt=dt, t_final=100)
-    trN2_1, NrN1_1, NrN2_sm = solve_rk8(func, N1_init=N1_init, N2_init=N2_init-0.1, t_final=100,\
-                                      a=a, b=b, c=c, d=d)
+    trN2_1, NrN1_1, NrN2_sm = solve_rk8(func, N1_init=N1_init, N2_init=N2_init-0.1, t_final=100)
     
     # run solvers for N2_init slightly bigger
     teN2_2, NeN2_2 = euler_solve(func, N1_init=N1_init, N2_init=N2_init+0.1, dt=dt, t_final=100)
-    trN2_2, NrN1_2, NrN2_bg = solve_rk8(func, N1_init=N1_init, N2_init=N2_init+0.1, t_final=100,\
-                                      a=a, b=b, c=c, d=d)
+    trN2_2, NrN1_2, NrN2_bg = solve_rk8(func, N1_init=N1_init, N2_init=N2_init+0.1, t_final=100)
     
     # plot changes
     fig, ax = plt.subplots(2,2)
@@ -425,6 +422,24 @@ def vary_ic(model='comp', N1_init=0.3, N2_init=0.6, a=1, b=2, c=1, d=3):
         fig.legend(handles, labels, loc='upper center', bbox_to_anchor=(0.5, 0.95), ncol=4)
         fig.tight_layout(rect=[0, 0, 1, 0.95])
         plt.savefig('vary_ic_phase_diagram.png')
+    
+    # create plot for equilibrium states
+    N1_eq = (c*(a-b)) / ((c*a)-(b*d))
+    N2_eq = (a*(c-d)) / ((c*a)-(b*d))
+    teN1_eq, NeN1_eq = euler_solve(func, N1_init=N1_eq, N2_init=N2_eq, dt=dt, t_final=100)
+    trN1_eq, NrN1_eq, NrN2_eq = solve_rk8(func, N1_init=N1_eq, N2_init=N2_eq, t_final=100)
+    if model=='comp':
+        fig = plt.figure()
+        plt.plot(teN1_eq, NeN1_eq[0, :], label='Euler N1', color='blue')
+        plt.plot(teN1_eq, NeN1_eq[1, :], label='Euler N2', color='red')
+        plt.plot(trN1_eq, NrN1_eq, label='RK8 N2', color='blue', linestyle='dotted')
+        plt.plot(trN1_eq, NrN2_eq, label='RK8 N2', color='red', linestyle='dotted')
+        plt.title(f'N1 = {N1_eq}, N2 = {N2_eq}')
+        plt.xlabel('Time (years)')
+        plt.ylabel('Population Carrying Capacity')
+        plt.legend()
+        plt.savefig('Comp_equilibrium.png')
+
 
 def vary_coeffs(model='comp', N1_init=0.3, N2_init=0.6, a=1, b=2, c=1, d=3):
     '''
@@ -455,10 +470,10 @@ def vary_coeffs(model='comp', N1_init=0.3, N2_init=0.6, a=1, b=2, c=1, d=3):
         fig_name = 'PP_coeffs.png'
 
     # now vary coefficients
-    # euler doesnt't use coefficients, so dont' change
-    teN1, NeN1 = euler_solve(func, N1_init=N1_init, N2_init=N2_init, dt=dt, t_final=100)
     
     # +/- half of a
+    teN1, NeN1 = euler_solve(func, N1_init=N1_init, N2_init=N2_init, dt=dt, t_final=100,\
+                                      a=a*0.5, b=b, c=c, d=d)
     trN1, NrN1, NrN2 = solve_rk8(func, N1_init=N1_init, N2_init=N2_init, t_final=100,\
                                       a=a*0.5, b=b, c=c, d=d)
     
@@ -469,6 +484,8 @@ def vary_coeffs(model='comp', N1_init=0.3, N2_init=0.6, a=1, b=2, c=1, d=3):
     ax[0, 0].plot(trN1, NrN2, label='RK8 N2', color='red', linestyle='dotted')
     ax[0, 0].set_title(f'a = {a * 0.5}')
 
+    teN1, NeN1 = euler_solve(func, N1_init=N1_init, N2_init=N2_init, dt=dt, t_final=100,\
+                                      a=a*1.5, b=b, c=c, d=d)
     trN1, NrN1, NrN2 = solve_rk8(func, N1_init=N1_init, N2_init=N2_init, t_final=100,\
                                       a=a*1.5, b=b, c=c, d=d)
     
@@ -479,6 +496,8 @@ def vary_coeffs(model='comp', N1_init=0.3, N2_init=0.6, a=1, b=2, c=1, d=3):
     ax[0, 1].set_title(f'a = {a * 1.5}')
 
     # +/- half of b
+    teN1, NeN1 = euler_solve(func, N1_init=N1_init, N2_init=N2_init, dt=dt, t_final=100,\
+                                      a=a, b=b*0.5, c=c, d=d)
     trN1, NrN1, NrN2 = solve_rk8(func, N1_init=N1_init, N2_init=N2_init, t_final=100,\
                                       a=a, b=b*0.5, c=c, d=d)
     
@@ -488,6 +507,8 @@ def vary_coeffs(model='comp', N1_init=0.3, N2_init=0.6, a=1, b=2, c=1, d=3):
     ax[1, 0].plot(trN1, NrN2, label='RK8 N2', color='red', linestyle='dotted')
     ax[1, 0].set_title(f'b = {b * 0.5}')
 
+    teN1, NeN1 = euler_solve(func, N1_init=N1_init, N2_init=N2_init, dt=dt, t_final=100,\
+                                      a=a, b=b*1.5, c=c, d=d)
     trN1, NrN1, NrN2 = solve_rk8(func, N1_init=N1_init, N2_init=N2_init, t_final=100,\
                                       a=a, b=b*1.5, c=c, d=d)
     
@@ -498,6 +519,8 @@ def vary_coeffs(model='comp', N1_init=0.3, N2_init=0.6, a=1, b=2, c=1, d=3):
     ax[1, 1].set_title(f'b = {b * 1.5}')
 
     # +/- half of c
+    teN1, NeN1 = euler_solve(func, N1_init=N1_init, N2_init=N2_init, dt=dt, t_final=100,\
+                                      a=a, b=b, c=c*0.5, d=d)
     trN1, NrN1, NrN2 = solve_rk8(func, N1_init=N1_init, N2_init=N2_init, t_final=100,\
                                       a=a, b=b, c=c*0.5, d=d)
     
@@ -507,6 +530,8 @@ def vary_coeffs(model='comp', N1_init=0.3, N2_init=0.6, a=1, b=2, c=1, d=3):
     ax[2, 0].plot(trN1, NrN2, label='RK8 N2', color='red', linestyle='dotted')
     ax[2, 0].set_title(f'c = {c * 0.5}')
 
+    teN1, NeN1 = euler_solve(func, N1_init=N1_init, N2_init=N2_init, dt=dt, t_final=100,\
+                                      a=a, b=b, c=c*1.5, d=d)
     trN1, NrN1, NrN2 = solve_rk8(func, N1_init=N1_init, N2_init=N2_init, t_final=100,\
                                       a=a, b=b, c=c*1.5, d=d)
     
@@ -517,6 +542,8 @@ def vary_coeffs(model='comp', N1_init=0.3, N2_init=0.6, a=1, b=2, c=1, d=3):
     ax[2, 1].set_title(f'c = {c * 1.5}')
 
     # +/- half of d
+    teN1, NeN1 = euler_solve(func, N1_init=N1_init, N2_init=N2_init, dt=dt, t_final=100,\
+                                      a=a, b=b, c=c, d=d*0.5)
     trN1, NrN1, NrN2 = solve_rk8(func, N1_init=N1_init, N2_init=N2_init, t_final=100,\
                                       a=a, b=b, c=c, d=d*0.5)
     
@@ -526,6 +553,8 @@ def vary_coeffs(model='comp', N1_init=0.3, N2_init=0.6, a=1, b=2, c=1, d=3):
     ax[3, 0].plot(trN1, NrN2, label='RK8 N2', color='red', linestyle='dotted')
     ax[3, 0].set_title(f'd = {d * 0.5}')
 
+    teN1, NeN1 = euler_solve(func, N1_init=N1_init, N2_init=N2_init, dt=dt, t_final=100,\
+                                      a=a, b=b, c=c, d=d*1.5)
     trN1, NrN1, NrN2 = solve_rk8(func, N1_init=N1_init, N2_init=N2_init, t_final=100,\
                                       a=a, b=b, c=c, d=d*1.5)
     
@@ -549,6 +578,8 @@ def vary_coeffs(model='comp', N1_init=0.3, N2_init=0.6, a=1, b=2, c=1, d=3):
     if model == 'pp':
         fig, ax = plt.subplots(4,2, figsize=(8,8))
 
+        teN1, NeN1 = euler_solve(func, N1_init=N1_init, N2_init=N2_init, dt=dt, t_final=100,\
+                                      a=a*0.5, b=b, c=c, d=d)
         trN1, NrN1, NrN2 = solve_rk8(func, N1_init=N1_init, N2_init=N2_init, t_final=100,\
                                       a=a*0.5, b=b, c=c, d=d)
 
@@ -556,6 +587,8 @@ def vary_coeffs(model='comp', N1_init=0.3, N2_init=0.6, a=1, b=2, c=1, d=3):
         ax[0, 0].plot(NrN1, NrN2, label='RK8', color='blue')
         ax[0, 0].set_title(f'a = {a*0.5}')
 
+        teN1, NeN1 = euler_solve(func, N1_init=N1_init, N2_init=N2_init, dt=dt, t_final=100,\
+                                      a=a*1.5, b=b, c=c, d=d)
         trN1, NrN1, NrN2 = solve_rk8(func, N1_init=N1_init, N2_init=N2_init, t_final=100,\
                                       a=a*1.5, b=b, c=c, d=d)
 
@@ -563,6 +596,8 @@ def vary_coeffs(model='comp', N1_init=0.3, N2_init=0.6, a=1, b=2, c=1, d=3):
         ax[0, 1].plot(NrN1, NrN2, label='RK8', color='blue')
         ax[0, 1].set_title(f'a = {a*1.5}')
 
+        teN1, NeN1 = euler_solve(func, N1_init=N1_init, N2_init=N2_init, dt=dt, t_final=100,\
+                                      a=a, b=b*0.5, c=c, d=d)
         trN1, NrN1, NrN2 = solve_rk8(func, N1_init=N1_init, N2_init=N2_init, t_final=100,\
                                       a=a, b=b*0.5, c=c, d=d)
 
@@ -570,6 +605,8 @@ def vary_coeffs(model='comp', N1_init=0.3, N2_init=0.6, a=1, b=2, c=1, d=3):
         ax[1, 0].plot(NrN1, NrN2, label='RK8', color='blue')
         ax[1, 0].set_title(f'b = {b*0.5}')
 
+        teN1, NeN1 = euler_solve(func, N1_init=N1_init, N2_init=N2_init, dt=dt, t_final=100,\
+                                      a=a, b=b*1.5, c=c, d=d)
         trN1, NrN1, NrN2 = solve_rk8(func, N1_init=N1_init, N2_init=N2_init, t_final=100,\
                                       a=a, b=b*1.5, c=c, d=d)
 
@@ -577,6 +614,8 @@ def vary_coeffs(model='comp', N1_init=0.3, N2_init=0.6, a=1, b=2, c=1, d=3):
         ax[1, 1].plot(NrN1, NrN2, label='RK8', color='blue')
         ax[1, 1].set_title(f'b = {b*1.5}')
 
+        teN1, NeN1 = euler_solve(func, N1_init=N1_init, N2_init=N2_init, dt=dt, t_final=100,\
+                                      a=a, b=b, c=c*0.5, d=d)
         trN1, NrN1, NrN2 = solve_rk8(func, N1_init=N1_init, N2_init=N2_init, t_final=100,\
                                       a=a, b=b, c=c*0.5, d=d)
 
@@ -584,6 +623,8 @@ def vary_coeffs(model='comp', N1_init=0.3, N2_init=0.6, a=1, b=2, c=1, d=3):
         ax[2, 0].plot(NrN1, NrN2, label='RK8', color='blue')
         ax[2, 0].set_title(f'c = {c*0.5}')
 
+        teN1, NeN1 = euler_solve(func, N1_init=N1_init, N2_init=N2_init, dt=dt, t_final=100,\
+                                      a=a, b=b, c=c*1.5, d=d)
         trN1, NrN1, NrN2 = solve_rk8(func, N1_init=N1_init, N2_init=N2_init, t_final=100,\
                                       a=a, b=b, c=c*1.5, d=d)
 
@@ -591,6 +632,8 @@ def vary_coeffs(model='comp', N1_init=0.3, N2_init=0.6, a=1, b=2, c=1, d=3):
         ax[2, 1].plot(NrN1, NrN2, label='RK8', color='blue')
         ax[2, 1].set_title(f'c = {c*1.5}')
 
+        teN1, NeN1 = euler_solve(func, N1_init=N1_init, N2_init=N2_init, dt=dt, t_final=100,\
+                                      a=a, b=b, c=c, d=d*0.5)
         trN1, NrN1, NrN2 = solve_rk8(func, N1_init=N1_init, N2_init=N2_init, t_final=100,\
                                       a=a, b=b, c=c, d=d*0.5)
 
@@ -598,6 +641,8 @@ def vary_coeffs(model='comp', N1_init=0.3, N2_init=0.6, a=1, b=2, c=1, d=3):
         ax[3, 0].plot(NrN1, NrN2, label='RK8', color='blue')
         ax[3, 0].set_title(f'd = {d*0.5}')
 
+        teN1, NeN1 = euler_solve(func, N1_init=N1_init, N2_init=N2_init, dt=dt, t_final=100,\
+                                      a=a, b=b, c=c, d=d*1.5)
         trN1, NrN1, NrN2 = solve_rk8(func, N1_init=N1_init, N2_init=N2_init, t_final=100,\
                                       a=a, b=b, c=c, d=d*1.5)
 
@@ -629,7 +674,8 @@ def phase_comparisons(N1_init=0.3, N2_init=0.6, a=1, b=2, c=1, d=3):
         Coefficients for Lotka-Volterra equations
     '''
     # run solvers for normal conditions
-    teN1, NeN1 = euler_solve(dNdt_pp, N1_init=N1_init, N2_init=N2_init, dt=0.05, t_final=100)
+    teN1, NeN1 = euler_solve(dNdt_pp, N1_init=N1_init, N2_init=N2_init, dt=0.05, t_final=100,\
+                                      a=a, b=b, c=c, d=d)
     trN1, NrN1, NrN2 = solve_rk8(dNdt_pp, N1_init=N1_init, N2_init=N2_init, t_final=100,\
                                       a=a, b=b, c=c, d=d)
     
