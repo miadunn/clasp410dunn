@@ -32,6 +32,8 @@ def n_layer_atm(N, epsilon, S0=1350, albedo=0.33, debug=False, nuclearwinter=Fal
         Set the incoming solar shortwave flux in Watts/m^2
     debug : boolean, default=False
         Turn on debug output
+    nuclearwinter : boolean, default=False
+        Turns on the nuclear winter scenario
 
     Returns
     -------
@@ -46,8 +48,8 @@ def n_layer_atm(N, epsilon, S0=1350, albedo=0.33, debug=False, nuclearwinter=Fal
 
     # set initial conditions
     if nuclearwinter:
-        # top layer is only afftected by incoming solar
-        b[-1] = -S0/4
+        # top layer is only affected by incoming solar
+        b[-1] = -S0/4 * (1-albedo)
     else:
         # surface layer is affected by incoing solar and the albedo of the surface
         b[0] = -S0/4 * (1-albedo)
@@ -70,8 +72,9 @@ def n_layer_atm(N, epsilon, S0=1350, albedo=0.33, debug=False, nuclearwinter=Fal
 
     # at the surface, epsilon = -1, breaking our pattern
     # divide by epsilon along surface to get correct results   
-    #  b/c epsilon = 1 at sfc         
-    A[0, 1:] /= epsilon
+    #  b/c epsilon = 1 at sfc
+    if not nuclearwinter:         
+        A[0, 1:] /= epsilon
 
     # Verify our A matrix.
     if debug:
