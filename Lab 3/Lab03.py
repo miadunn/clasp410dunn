@@ -193,6 +193,17 @@ def emissivity_layers(epsilon=0.255, S0=1350, albedo=0.33, maxlayers=50, toleran
         if abs(surface_temp - goaltemp) <= tolerance:
             if venus:
                 print(f'For Venus: N={N} with surface temp={surface_temp}')
+                
+                temp_heights = temp_profile[-1]
+                altitudes = np.arange(N+1)
+
+                fig = plt.figure()
+                plt.plot(temp_heights, altitudes)
+                plt.xlabel('Temperature (K)')
+                plt.ylabel('Altitude (N layers)')
+                plt.title('Venus: Temperature vs Altitude')
+                plt.savefig('venus_emissivity_layers.png')
+                
                 return N, surface_temp
 
             else:
