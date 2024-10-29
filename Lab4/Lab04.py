@@ -50,22 +50,19 @@ def heatdiff(xmax, tmax, dx, dt, c2=1.0, tolerance=1e-3, debug=True, permafrost=
     # Initialize our data array:
     U = np.zeros((M, N))
 
-    # Set initial conditions:
-    U[:, 0] = 4*xgrid - 4*xgrid**2
-
-    # Set boundary conditions:
+    # Set initial and boundary conditions:
     if permafrost==False:
         U[0, :] = 0
         U[-1, :] = 0
+        U[:, 0] = 4*xgrid - 4*xgrid**2
     
     if permafrost==True:
-        U[0, :] = temp_kanger(tgrid*60*60*24)
+        U[0, :] = temp_kanger(tgrid/(60*60*24)) # tgrid in days
         U[-1, :] = 5
+        U[:, 0] = 0
 
     # Set our "r" constant.
     r = c2 * dt / dx**2
-
-    steady_state = False
 
     # Solve! Forward differnce ahoy.
     for j in range(N-1):
@@ -76,8 +73,7 @@ def heatdiff(xmax, tmax, dx, dt, c2=1.0, tolerance=1e-3, debug=True, permafrost=
         max_change = np.max(np.abs(U[:,j+1] - U[:, j]))
         # 
         if max_change < tolerance:
-            steady_state = True
-            print(f'steady state reached after {j} steps')
+            print(f'Steady state reached after {j * dt / (60 * 60 * 24 * 365):.1f} years')
             break
 
 
@@ -115,14 +111,39 @@ def temp_kanger(t):
     t_amp = (t_kanger - t_kanger.mean()).max()
     return t_amp*np.sin(((np.pi/180) * t) - (np.pi/2)) + t_kanger.mean()
 
-def permafrost(xmax=10, tmax=(5*365*24*60*60), dx=1, dt=24*3600, c2=2.5e-7, tolerance=1e-3, permafrost=True):
+def permafrost(xmax=100, tmax=(100*365*24*60*60), dx=0.5, dt=24*3600, c2=2.5e-7, tolerance=1e-3, permafrost=True):
     
     x, time, heat = heatdiff(xmax=xmax, tmax=tmax, dx=dx, dt=dt, c2=c2, tolerance=tolerance, permafrost=permafrost)
-    
-    # plot
-    fig, axs = plt.subplots(1,1)
-    map = axs.pcolor((time/ (60*60*24*365)), x, heat, cmap='seismic', vmin=-25, vmax=25)
-    axs.invert_yaxis()
-    plt.colorbar(map, ax=axs, label='Temperature ($C$)')
+
+    # plot colormap
+    fig, axs = plt.subplots(1,2, figsize=(15,6))
+    map = axs[0].pcolor((time/ (60*60*24*365)), x, heat, cmap='seismic', vmin=-25, vmax=25)
+    axs[0].invert_yaxis()
+    plt.colorbar(map, ax=axs[0], label='Temperature ($C$)')
+
+    # get winter/summer profile values
+    winter = heat[:, -365:].min(axis=1)
+    summer = heat[:, -365:].max(axis=1)
+
+    # plot temp profile
+    axs[1].plot(summer, x, color='red', label='summer')
+    axs[1].plot(winter, x, color='blue', label='winter')
+    axs[1].invert_yaxis()
+    axs[1].legend()
+
+    plt.tight_layout()
     plt.savefig('permafrost.png')
     plt.close('all')
+
+    # calculate active and permafrost layer depth
+    active_layer_idx = np.argmax(summer < 0)
+    active_layer_depth = x[active_layer_idx]
+    permafrost_layer_idx = np.argmax(winter > 0)
+    permafrost_layer_depth = x[permafrost_layer_idx]
+
+    print()
+    print('Depth of active layer:', active_layer_depth, 'm')
+    print()
+    print('Depth of the permafrost layer is:', permafrost_layer_depth, 'm')
+
+
