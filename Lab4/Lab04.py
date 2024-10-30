@@ -91,10 +91,6 @@ def heatdiff(xmax, tmax, dx, dt, c2=1.0, debug=False,\
     # Set our "r" constant.
     r = c2 * dt / dx**2
 
-    # make steady state check
-    steps_per_year = int(365*24*3600/dt)
-    steady_state_year = None
-
     # Solve! Forward differnce ahoy.
     for j in range(N-1):
         U[1:-1, j+1] = (1-2*r) * U[1:-1, j] + \
@@ -219,6 +215,7 @@ def permafrost(xmax=100, tmax=(100*365*24*60*60), dx=0.5, dt=24*3600, c2=2.5e-7,
     axs[1].set_ylabel('Depth (m)')
     axs[1].set_title('Ground Temperature in Kangerlussuaq, Greenland')
 
+    fig.suptitle(f'Temperature shift of {temp_shift}deg C')
     plt.tight_layout()
     plt.savefig(f'permafrost{temp_shift}.png')
     plt.close('all')
