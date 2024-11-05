@@ -3,12 +3,12 @@
 This file performs the heat equation/diffusion simulations for Lab 4.
 To get the solution for lab 4, run these commands:
 
+I give some change for the commands in order to get the figures in Q3 could be combined together
+
 example()
 permafrost(tmax=5*365*24*3600)
 permafrost()
-permafrost(temp_shift=0.5)
-permafrost(temp_shift=1)
-permafrost(temp_shift=3)
+T_gradient_Q3()
 
 '''
 
@@ -229,3 +229,47 @@ def permafrost(xmax=100, tmax=(100*365*24*60*60), dx=0.5, dt=24*3600, c2=2.5e-7,
     print()
     print('Depth of active layer:', active_layer_depth, 'm')
     print('Depth of the permafrost layer:', permafrost_layer_depth, 'm')
+
+'''
+An important change is here:
+
+For Q3,
+To combining the three temperature gradient figures with different T shift, 
+I creat a function call T_gradient_Q3 to achieve that. 
+This method may be easy for us to observe the comparison among three different T_shift
+
+'''
+
+def T_gradient_Q3(T_shift = [0.5,1,3],xmax=100, tmax=(100*365*24*60*60), permafrost=True,\
+                  dx=0.5, dt=24*3600, c2=2.5e-7):
+    
+    fig, ax = plt.subplots(1,1, figsize=(8,6))
+    for i in T_shift:
+        x, time, heat = heatdiff(xmax=xmax, tmax=tmax, dx=dx, dt=dt, c2=c2,\
+                            permafrost=permafrost,temp_shift=i)
+    
+        winter = heat[:, -365:].min(axis=1)
+        summer = heat[:, -365:].max(axis=1)
+
+        lw = 2
+        labelsize = 15
+        years = tmax/(365*24*60*60)
+        titlesize = 20
+
+        # plot temp profile
+        ax.plot(winter, x, label=f'Winter T shift = {i}',linewidth=lw)
+        ax.plot(summer, x,label=f'Summer T shift = {i}',linewidth=lw, linestyle='--')
+        plt.legend(loc='lower left') 
+        # plt.ylim(0,100)
+        # plt.yticks(np.arange(0,101, 10))
+        ax.invert_yaxis()
+    
+    plt.title(f"Ground Temperature: Kangerlussuaq, years={years}",fontsize = titlesize)
+    plt.xlabel("Temperature(℃)",fontsize = labelsize)
+    plt.ylabel("Depth(m)",fontsize = labelsize)
+    plt.xlim(-8,6)
+    plt.xticks(np.arange(-8, 8, 2))
+    plt.grid(True)
+    plt.tight_layout()
+    plt.savefig(f'Temperature gradient for Q3.png')
+    plt.close('all')  
