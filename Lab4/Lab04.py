@@ -20,7 +20,6 @@ def heatdiff(xmax, tmax, dx, dt, c2=1.0, debug=False,\
               permafrost=False, temp_shift=0):
     '''
     Calculates the heat diffusion matrix of specified dimensions (time and space)
-    An important change goes here.
 
     Parameters:
     -----------
