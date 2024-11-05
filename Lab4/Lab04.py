@@ -242,7 +242,29 @@ This method may be easy for us to observe the comparison among three different T
 
 def T_gradient_Q3(T_shift = [0.5,1,3],xmax=100, tmax=(100*365*24*60*60), permafrost=True,\
                   dx=0.5, dt=24*3600, c2=2.5e-7):
-    
+    '''
+    Plots the temperature profiles for summer and winter conditions with different T shift together
+
+    Parameters:
+    -----------
+    T_shift: float array
+        different T shift (℃)
+    xmax : float
+        maximum depth (meters)
+    tmax : float
+        maximum time (seconds)
+    dx : float
+        change in depth (meters)
+    dt : float
+        change in time (seconds)
+    c2 : float, default=1.0
+        thermal diffusivity (m^2 / s)
+    permafrost : boolean, default=False
+        turns on/off permafrost option, which changes boundary conditions
+    temp_shift : float, default=0
+        temperature shift due to global warming
+    ''' 
+      
     fig, ax = plt.subplots(1,1, figsize=(8,6))
     for i in T_shift:
         x, time, heat = heatdiff(xmax=xmax, tmax=tmax, dx=dx, dt=dt, c2=c2,\
