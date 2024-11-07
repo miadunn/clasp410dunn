@@ -3,18 +3,29 @@
 This file performs the heat equation/diffusion simulations for Lab 4.
 To get the solution for lab 4, run these commands:
 
-I give some change for the commands in order to get the figures in Q3 could be combined together
-
 example()
-permafrost(tmax=5*365*24*3600)
-permafrost()
-T_gradient_Q3()
+permafrost(tmax=5*365*24*3600) # You could see some additional region of permafrost and active layer now
+permafrost() # You could see some additional region of permafrost and active layer now
+T_gradient_Q3() # Here is the first change which could help us to compare different T gradient in the same figure, 
+                which could also be a test for understanding what I have added
+T_gradient_Q1() # Here is the thrid change which could help us generate several figures for T gradient to observe
+                how T gradient varies with years, which could also be a test for understanding what I have added.
+
+My introduction of variation is under below:
+
+    1. Create 'T_gradient_Q3()' to combine three T shift figures together which could help us better compare them
+    
+    2. Create 'T_gradient_Q1()' to show four figures with four different time period,
+which could help us better observe how T gradient varies with time
+    
+    3. Add some code in 'permafrost()', which could help us draw the region of permafrost(blue) and active layer(brown) 
+on the T gradient figure to see the range of each layer directly
 
 '''
 
 import numpy as np
 import matplotlib.pyplot as plt
-
+from matplotlib.patches import Rectangle
 
 def heatdiff(xmax, tmax, dx, dt, c2=1.0, debug=False,\
               permafrost=False, temp_shift=0):
@@ -215,16 +226,42 @@ def permafrost(xmax=100, tmax=(100*365*24*60*60), dx=0.5, dt=24*3600, c2=2.5e-7,
     axs[1].set_ylabel('Depth (m)')
     axs[1].set_title('Ground Temperature in Kangerlussuaq, Greenland')
 
-    fig.suptitle(f'Temperature shift of {temp_shift}deg C')
-    plt.tight_layout()
-    plt.savefig(f'permafrost{temp_shift}.png')
-    plt.close('all')
+    '''
+    Add a grid for the T gradient figure so that we could see when the T gradient over zero degree.
+    '''
+    axs[1].grid(True)
+    axs[1].set_xlim(-8,6)
+    axs[1].set_xticks(np.arange(-8,7,2))
 
     # calculate active and permafrost layer depth
     active_layer_idx = np.argmax(summer < 0)
     active_layer_depth = x[active_layer_idx]
     permafrost_layer_idx = np.argmax(winter > 0)
     permafrost_layer_depth = x[permafrost_layer_idx]
+
+    '''
+    Add permafrost(blue) and active layer(brown) for the T gradient figure
+    '''
+
+    perma_x_start, perma_width = -8, 14
+    perma_y_start, perma_height = active_layer_depth, permafrost_layer_depth-active_layer_depth
+    act_x_start, act_width = -8, 14
+    act_y_start, act_height = 0, active_layer_depth
+    perma_region = Rectangle((perma_x_start, perma_y_start), perma_width, perma_height, linewidth=1.5,
+                      edgecolor='white', facecolor='blue', alpha=0.3)
+    act_region = Rectangle((act_x_start, act_y_start), act_width, act_height, linewidth=1.5,
+                      edgecolor='white', facecolor='brown', alpha=0.3)
+    axs[1].add_patch(perma_region)
+    axs[1].add_patch(act_region)
+    axs[1].text(perma_x_start + 0.1, perma_y_start + perma_height - 5, "Permafrost", fontsize=14,
+           color="blue", verticalalignment='top')#, bbox=dict(facecolor="white", alpha=0.5, edgecolor='none'))
+    axs[1].text(act_x_start + 0.1, act_y_start + act_height - 6.5, "Active layer", fontsize=14,
+           color="brown", verticalalignment='top')#, bbox=dict(facecolor="white", alpha=0.5, edgecolor='none'))
+
+    fig.suptitle(f'Temperature shift of {temp_shift}deg C')
+    plt.tight_layout()
+    plt.savefig(f'permafrost{temp_shift}.png',dpi = 500)
+    plt.close('all')
 
     print()
     print('Depth of active layer:', active_layer_depth, 'm')
@@ -294,4 +331,64 @@ def T_gradient_Q3(T_shift = [0.5,1,3],xmax=100, tmax=(100*365*24*60*60), permafr
     plt.grid(True)
     plt.tight_layout()
     plt.savefig(f'Temperature gradient for Q3.png')
-    plt.close('all')  
+    plt.close('all')
+
+def T_gradient_Q1(T_shift = 0,xmax=100, permafrost=True,\
+                  dx=0.5, dt=24*3600, c2=2.5e-7):
+    '''
+    Plots four temperature profiles for summer and winter conditions with different years
+
+    Parameters:
+    -----------
+    T_shift: float
+        T shift (℃) for month average temperature in Kangerlussuaq
+    xmax : float
+        maximum depth (meters)
+    dx : float
+        change in depth (meters)
+    dt : float
+        change in time (seconds)
+    c2 : float, default=1.0
+        thermal diffusivity (m^2 / s)
+    permafrost : boolean, default=False
+        turns on/off permafrost option, which changes boundary conditions
+    temp_shift : float, default=0
+        temperature shift due to global warming
+    ''' 
+      
+    fig, axs = plt.subplots(2,2, figsize=(8,6))
+    subcode = np.array([['A','B'],
+               ['C','D']])
+    for i in range(2):
+        for j in range(2):
+            years = i*40+j*20+40
+            x, time, heat = heatdiff(xmax=xmax, tmax=years*365*24*60*60, dx=dx, dt=dt, c2=c2,\
+                                permafrost=permafrost,temp_shift=T_shift)
+        
+            winter = heat[:, -365:].min(axis=1)
+            summer = heat[:, -365:].max(axis=1)
+
+            lw = 2
+            labelsize = 15
+            titlesize = 20
+
+            # plot temp profile
+            axs[i,j].plot(winter, x, label=f'Winter',linewidth=lw)
+            axs[i,j].plot(summer, x, label=f'Summer',linewidth=lw, linestyle='--')
+            axs[i,j].set_title(f'years={years}',fontsize = labelsize)
+            axs[i,j].legend(loc='lower left') 
+            axs[i,j].set_xlim(-8,7)
+            axs[i,j].set_xticks(np.arange(-8, 8, 2))
+            axs[i,j].set_ylim(0,100)
+            axs[i,j].set_yticks(np.arange(0,101, 10))
+            axs[i,j].invert_yaxis()
+            axs[i,j].text(0.90, 0.05, subcode[i,j], transform=axs[i,j].transAxes,\
+                        fontsize=20, fontweight='bold', color='black') # Set code for each subplot
+            axs[i,j].grid(True)
+    
+    fig.suptitle(f"Ground Temperature: Kangerlussuaq",fontsize = titlesize)
+    fig.supxlabel("Temperature(℃)",fontsize = labelsize)
+    fig.supylabel("Depth(m)",fontsize = labelsize)
+    plt.tight_layout()
+    plt.savefig(f'Temperature gradient for Q1.png',dpi = 500)
+    plt.close('all')
