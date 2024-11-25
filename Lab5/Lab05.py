@@ -1,7 +1,14 @@
 #!/usr/bin/env python3
 
 '''
-Draft code for Lab 5: SNOWBALL EARTH!!!
+This file performs the snowball earth simulations for Lab 5.
+To get the solution for lab 5, run the following commands:
+
+test_snowball()
+vary_parameters()
+test_parameters()
+vary_init()
+multiplier()
 '''
 
 import numpy as np
@@ -131,7 +138,7 @@ def insolation(S0, lats):
 
 def snowball_earth(nbins=18, dt=1., tstop=10000, lam=100., spherecorr=True,
                     debug=False, albedo=0.3, emiss=1, S0=1370, dynamic_albedo=False,
-                    albedo_ice=0.6, albedo_gnd=0.3, init_temp=None, gamma=None):
+                    albedo_ice=0.6, albedo_gnd=0.3, init_temp=None, gamma=1.0):
     '''
     Perform snowball earth simulation.
 
@@ -151,11 +158,22 @@ def snowball_earth(nbins=18, dt=1., tstop=10000, lam=100., spherecorr=True,
     debug : bool, defaults to False
         Turn  on or off debug print statements.
     albedo : float, defaults to 0.3
-        Set the Earth's albedo
+        Set the Earth's default albedo
     emiss : float, defaults to 1
         Set ground emissivity. Change to zero to turn off radiative cooling.
     S0 : float, defaults to 1370
         Set incoming solar forcing constant. Change to zero to turn off insolation.
+    dynamic_albedo : boolean, defaults to False
+        Turns on dynamic albedo for soil vs ice
+    albedo_ice : float, defaults to 0.6
+        Set the albedo of ice covered ground
+    albedo_gnd : float, defaults to 0.3
+        Set the albedo of clear ground
+    init_temp : float or None, defaults to None
+        Sets the the global temperature values to a single value in Celcius
+        If None, the temp_warm() function is used for surface temperatures
+    gamma : float, defaults to 1.0
+        Sets the gamma multiplier for insolation
 
     Returns
     -------
@@ -174,10 +192,7 @@ def snowball_earth(nbins=18, dt=1., tstop=10000, lam=100., spherecorr=True,
     dy = radearth * np.pi * dlat / 180.
 
     # Create initial condition:
-    if gamma is not None:
-       insol = gamma * insolation(S0, lats) 
-    else:
-        insol = insolation(S0, lats)
+    insol = gamma * insolation(S0, lats) 
 
     # initialize temp arrays
     if init_temp is not None:
@@ -302,7 +317,13 @@ def test_snowball(tstop=10000):
 
 def vary_parameters(tstop=10000):
     '''
-    
+    Plots ranges of diffusivity(lambda) and emissivity and compares
+    to the warm Earth equilibrium.
+
+    Parameters
+    ----------
+    tstop : float, defaults to 10,000
+        Stop time in years
     '''
 
     # initialize
@@ -318,6 +339,7 @@ def vary_parameters(tstop=10000):
     fig = plt.figure()
     for i in range(lambdas.size):
         plt.plot(lats, T_lambda[i], label=rf'$\lambda$ = {lambdas[i]}')
+    
     # add warm earth to plot
     warm = temp_warm(lats)
     
@@ -342,6 +364,7 @@ def vary_parameters(tstop=10000):
     # plot temps for each emissivity
     for i in range(emissivities.size):
         plt.plot(lats, T_emiss[i], label=rf'$e$ = {np.round(emissivities[i], 2)}')
+    
     # add warm earth
     warm = temp_warm(lats)
     plt.plot(lats, warm, color='black', label='warm')
@@ -354,13 +377,27 @@ def vary_parameters(tstop=10000):
     plt.savefig('vary_emiss.png')
 
 
-def test_parameters(tstop=10000):
+def test_parameters(tstop=10000, emiss=0.7, lam=30):
+    '''
+    Plots emissivity and diffusivity parameters estimated to be the closest
+    to the warm earth equilibrium
 
+    Parameters
+    ----------
+    tstop : float, defaults to 10,000
+        Stop time in years
+    emiss : float, defaults to 0.7
+        Sets emissivity value
+    lam : float, defaults to 30
+        Sets lambda value
+    '''
 
-
-    lats, t_rad = snowball_earth(tstop=tstop, emiss=0.7, lam=100)
+    # run simulation for emiss = 0.7 since it looks the closest in the vary_parameters plot
+    # leave lambda as the default test value of 100 for best comparison
+    lats, t_rad = snowball_earth(tstop=tstop, emiss=emiss, lam=100)
     t_warm = temp_warm(lats)
 
+    # plot
     fig = plt.figure()
     plt.plot(lats, t_rad, label=f'emiss=0.7, lambda=100')
     plt.plot(lats, t_warm, label='warm')
@@ -372,10 +409,11 @@ def test_parameters(tstop=10000):
     plt.tight_layout()
     plt.savefig('found_emiss.png')
 
-
-    lats, t_rad = snowball_earth(tstop=tstop, emiss=0.7, lam=30)
+    # run simulation for emiss = 0.7 and lambda = 30 to best match warm earth
+    lats, t_rad = snowball_earth(tstop=tstop, emiss=emiss, lam=lam)
     t_warm = temp_warm(lats)
 
+    # plot
     fig = plt.figure()
     plt.plot(lats, t_rad, label=f'emiss=0.7, lambda=30')
     plt.plot(lats, t_warm, label='warm')
@@ -389,14 +427,30 @@ def test_parameters(tstop=10000):
 
 
 def vary_init(tstop=10000, emiss=0.7, lam=30):
+    '''
+    Varies initial temperature and uses a dynamic albedo for ice vs ground
+    and plots results. Also compares to the warm earth equilibrium and a 
+    flash-frozen simulation.
 
+    Parameters
+    ----------
+    tstop : float, defaults to 10,000
+        Stop time in years
+    emiss : float, defaults to 0.7
+        Sets emissivity value
+    lam : float, defaults to 30
+        Sets lambda value
+    '''
 
-
+    # run simulations for varying initial temps
     lats, t_hot = snowball_earth(tstop=tstop, dynamic_albedo=True, init_temp=60, emiss=emiss, lam=lam)
     lats, t_cold = snowball_earth(tstop=tstop, dynamic_albedo=True, init_temp=-60, emiss=emiss, lam=lam)
+    # instead of dynamic albedo, use albedo=0.6 (ice)
     lats, t_frozen = snowball_earth(tstop=tstop, albedo=0.6, emiss=emiss, lam=lam)
+    # compare these to warm earth
     t_warm = temp_warm(lats)
 
+    # plot
     fig = plt.figure()
     plt.plot(lats, t_hot, label='hot earth')
     plt.plot(lats, t_cold, label='cold earth')
@@ -412,14 +466,27 @@ def vary_init(tstop=10000, emiss=0.7, lam=30):
 
 
 def multiplier(tstop=10000, emiss=0.7, lam=30):
+    '''
+    Uses a gamma multiplier to the insolation with cold earth initial conditions.
+    Plots average global temperatures vs gamma.
 
-
+    Parameters
+    ----------
+    tstop : float, defaults to 10,000
+        Stop time in years
+    emiss : float, defaults to 0.7
+        Sets emissivity value
+    lam : float, defaults to 30
+        Sets lambda value
+    '''
+    # set gamma values
     gamma_values = np.round(np.arange(0.4, 1.45, 0.05).tolist() + np.arange(1.4, 0.35, -0.05).tolist(), 3)
-    
     #print(gamma_values)
+    # initialize 
     global_means = []
     temps = np.full(18, -60, dtype=np.float64)
 
+    # for each gamma value, run the simulation and save global mean temp
     for gamma in gamma_values:
         lats, Temp = snowball_earth(tstop=tstop, init_temp=temps, gamma=gamma, 
                                     dynamic_albedo=True, emiss=emiss, lam=lam)
@@ -427,9 +494,12 @@ def multiplier(tstop=10000, emiss=0.7, lam=30):
         global_means.append(global_mean_temp)
         temps = Temp.copy()
 
+    # plot
     fig = plt.figure()
     plt.plot(gamma_values, global_means, label='decreasing gamma')
 
+    # run only the increasing section of the gamma values to make it clear the
+    # direction of the plot line
     gamma_values = np.round(np.arange(0.4, 1.45, 0.05).tolist(), 3)
     
     #print(gamma_values)
@@ -443,6 +513,7 @@ def multiplier(tstop=10000, emiss=0.7, lam=30):
         global_means.append(global_mean_temp)
         temps = Temp.copy()
 
+    # plot increasing gamma values in a different color
     plt.plot(gamma_values, global_means, label='increasing gamma')
     
     plt.xlabel(r'$\gamma$')
