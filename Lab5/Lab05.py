@@ -394,13 +394,18 @@ def test_parameters(tstop=10000, emiss=0.7, lam=30):
 
     # run simulation for emiss = 0.7 since it looks the closest in the vary_parameters plot
     # leave lambda as the default test value of 100 for best comparison
-    lats, t_rad = snowball_earth(tstop=tstop, emiss=emiss, lam=100)
+    lats, t_rad_7 = snowball_earth(tstop=tstop, emiss=emiss, lam=100)
+
+    lats, t_rad_65 = snowball_earth(tstop=tstop, emiss=emiss-0.05, lam=100)
+    lats, t_rad_75 = snowball_earth(tstop=tstop, emiss=emiss+0.05, lam=100)
     t_warm = temp_warm(lats)
 
     # plot
     fig = plt.figure()
-    plt.plot(lats, t_rad, label=f'emiss=0.7, lambda=100')
-    plt.plot(lats, t_warm, label='warm')
+    plt.plot(lats, t_rad_65, label=f'emiss=0.65, lambda=100')
+    plt.plot(lats, t_rad_7, label=f'emiss=0.7, lambda=100')
+    plt.plot(lats, t_rad_75, label=f'emiss=0.75, lambda=100')
+    plt.plot(lats, t_warm, label='warm', color='black')
 
     plt.xlabel('Latitude')
     plt.ylabel('Temperature (C)')
@@ -410,13 +415,17 @@ def test_parameters(tstop=10000, emiss=0.7, lam=30):
     plt.savefig('found_emiss.png')
 
     # run simulation for emiss = 0.7 and lambda = 30 to best match warm earth
-    lats, t_rad = snowball_earth(tstop=tstop, emiss=emiss, lam=lam)
+    lats, t_rad_30 = snowball_earth(tstop=tstop, emiss=emiss, lam=lam)
+    lats, t_rad_20 = snowball_earth(tstop=tstop, emiss=emiss, lam=lam-10)
+    lats, t_rad_40 = snowball_earth(tstop=tstop, emiss=emiss, lam=lam+10)
     t_warm = temp_warm(lats)
 
     # plot
     fig = plt.figure()
-    plt.plot(lats, t_rad, label=f'emiss=0.7, lambda=30')
-    plt.plot(lats, t_warm, label='warm')
+    plt.plot(lats, t_rad_20, label=f'emiss=0.7, lambda=20')
+    plt.plot(lats, t_rad_30, label=f'emiss=0.7, lambda=30')
+    plt.plot(lats, t_rad_40, label=f'emiss=0.7, lambda=40')
+    plt.plot(lats, t_warm, label='warm', color='black')
 
     plt.xlabel('Latitude')
     plt.ylabel('Temperature (C)')
@@ -455,8 +464,9 @@ def vary_init(tstop=10000, emiss=0.7, lam=30):
     plt.plot(lats, t_hot, label='hot earth')
     plt.plot(lats, t_cold, label='cold earth')
     plt.plot(lats, t_frozen, label='flash frozen earth')
-    plt.plot(lats, t_warm, label='warm earth')
-    
+    plt.plot(lats, t_warm, label='warm earth', color='black')
+    plt.axhline(-10, color='grey',alpha=0.2)
+
     plt.xlabel('Latitude')
     plt.ylabel('Temperature (C)')
     plt.title('Latitude vs Temperature')
@@ -518,7 +528,7 @@ def multiplier(tstop=10000, emiss=0.7, lam=30):
     
     plt.xlabel(r'$\gamma$')
     plt.ylabel('global mean temperature (C)')
-    plt.title('global mean temperatures vs gamma multiplier')
+    plt.title('global mean temperatures vs gamma')
     plt.legend()
     plt.tight_layout()
     plt.savefig('gamma_multiplier.png')
