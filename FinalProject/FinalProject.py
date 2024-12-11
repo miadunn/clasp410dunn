@@ -88,7 +88,11 @@ def test_case():
     time = np.arange(2000, 2101, delta_t)
     
     # create CO2 conc. array
-    k = 0.0055
+    C_2000 = 368.96 #ppm
+    C_2023 = 419.32 
+
+    k = np.log(C_2023 / C_2000) / (2023-2000)
+
     C_CO2 = 368.96 * np.exp(k * (time - time[0]))
     # convert to radiative forcing
     Q_CO2 = 5.35 * np.log(C_CO2/C_CO2[0])
@@ -121,8 +125,12 @@ def vary_time():
     for delta_t in timestep_list:
         time = np.arange(2000, 2101, delta_t)
 
-        # calc exponential CO2 concentration
-        k = 0.0055
+        # create CO2 conc. array
+        C_2000 = 368.96 #ppm
+        C_2023 = 419.32 
+
+        k = np.log(C_2023 / C_2000) / (2023-2000)
+        
         C_CO2 = 368.96 * np.exp(k * (time - time[0]))
         Q_CO2 = 5.35 * np.log(C_CO2 / C_CO2[0])
 
@@ -154,7 +162,11 @@ def vary_parameters():
         time = np.arange(2000, 2101, delta_t)
 
         # exponential CO2 concentration
-        k = 0.0055
+        C_2000 = 368.96 #ppm
+        C_2023 = 419.32 
+
+        k = np.log(C_2023 / C_2000) / (2023-2000)
+
         C_CO2 = 368.96 * np.exp(k * (time - time[0]))
         Q_CO2 = 5.35 * np.log(C_CO2 / C_CO2[0])
 
@@ -182,7 +194,11 @@ def vary_parameters():
         time = np.arange(2000, 2101, delta_t)
 
         # exponential CO2 concentration
-        k = 0.0055
+        C_2000 = 368.96 #ppm
+        C_2023 = 419.32 
+
+        k = np.log(C_2023 / C_2000) / (2023-2000)
+
         C_CO2 = 368.96 * np.exp(k * (time - time[0]))
         Q_CO2 = 5.35 * np.log(C_CO2 / C_CO2[0])
 
@@ -227,17 +243,26 @@ def compare_gas():
     time = np.arange(2000, 2101, delta_t)
     
     # calc CO2 radiative forcing
-    k = 0.0055
-    C_CO2 = 368.96 * np.exp(k * (time - time[0]))
+    C_2000 = 368.96 #ppm
+    C_2023 = 419.32 
+
+    k = np.log(C_2023 / C_2000) / (2023-2000)
+    C_CO2 = C_2000 * np.exp(k * (time - time[0]))
     Q_CO2 = 5.35 * np.log(C_CO2/C_CO2[0])
 
     # define conc. for CH4
-    k_CH4 = 0.0035
-    C_CH4 = 1773.22 * np.exp(k_CH4 * (time - time[0]))
+    C_2000 = 1773.22 #ppb
+    C_2023 = 1921.76 
+
+    k_CH4 = np.log(C_2023 / C_2000) / (2023-2000)
+    C_CH4 = C_2000 * np.exp(k_CH4 * (time - time[0]))
 
     # define conc. for N2O
-    k_N2O = 0.0028
-    C_N2O = 316.36 * np.exp(k_N2O * (time - time[0]))
+    C_2000 = 316.36 #ppb
+    C_2023 = 336.69 
+
+    k_N2O = np.log(C_2023 / C_2000) / (2023-2000)
+    C_N2O = C_2000 * np.exp(k_N2O * (time - time[0]))
 
     # calc CH4 forcing
     Q_CH4 = 0.036 * (np.sqrt(C_CH4) - np.sqrt(C_CH4[0])) - \
@@ -274,18 +299,27 @@ def equivalent_warming():
     delta_t = 0.5
     time = np.arange(2000, 2101, delta_t)
     
-    # calc radiative forcing for CO2
-    k = 0.0055
-    C_CO2 = 368.96 * np.exp(k * (time - time[0]))
+    # calc CO2 radiative forcing
+    C_2000 = 368.96 #ppm
+    C_2023 = 419.32 
+
+    k = np.log(C_2023 / C_2000) / (2023-2000)
+    C_CO2 = C_2000 * np.exp(k * (time - time[0]))
     Q_CO2 = 5.35 * np.log(C_CO2/C_CO2[0])
 
-    # set conc. for CH4
-    k_CH4 = 0.0035
-    C_CH4 = 1773.22 * np.exp(k_CH4 * (time - time[0]))
+    # define conc. for CH4
+    C_2000 = 1773.22 #ppb
+    C_2023 = 1921.76 
 
-    # set conc. for N2O
-    k_N2O = 0.0028
-    C_N2O = 316.36 * np.exp(k_N2O * (time - time[0]))
+    k_CH4 = np.log(C_2023 / C_2000) / (2023-2000)
+    C_CH4 = C_2000 * np.exp(k_CH4 * (time - time[0]))
+
+    # define conc. for N2O
+    C_2000 = 316.36 #ppb
+    C_2023 = 336.69 
+
+    k_N2O = np.log(C_2023 / C_2000) / (2023-2000)
+    C_N2O = C_2000 * np.exp(k_N2O * (time - time[0]))
 
     # Calculate temperature anomalies fo CO2
     T_prime_CO2 = calc_T_prime(1, 300, Q_CO2, delta_t)
