@@ -109,8 +109,7 @@ def test_case():
 
     plt.savefig('test_case.png')
 
-    print(np.round(T_prime[:5], 4))
-    print(np.round(T_prime[-5:],4))
+    print(f'Temperature change over 100 years is {T_prime[-1] - T_prime[0]}')
 
 def vary_time():
     '''
@@ -120,7 +119,7 @@ def vary_time():
     '''
 
     # create list of timesteps
-    timestep_list = [10, 5, 2, 1, 0.5]
+    timestep_list = [0.5, 1, 5, 10, 20]
     
     plt.figure(figsize=(10, 6))
 
@@ -177,7 +176,7 @@ def vary_parameters():
         T_prime = calc_T_prime(lam, 300, Q_CO2, delta_t)
 
         # plot
-        plt.plot(time, T_prime, label=f'lamdba_R = {lam}')
+        plt.plot(time, T_prime, label=rf'$\lambda_R$ = {lam}')
 
     plt.xlabel('Year')
     plt.ylabel('Temperature Anomaly (K)')
@@ -237,9 +236,16 @@ def calc_f(M, N):
                       (5.31*10**-15 * M * (M*N)**1.52))
     return f
 
-def compare_gas():
+def compare_gas(lam=1, dz=300):
     '''
     Calculate and compare temperature changes for CO2, CH4, and N2O
+
+    Parameters
+    ----------
+    lam : float, defaults to 1.
+        Climate sensitivity value
+    dz : float, defaults to 300
+        Depth of the mixed layer in meters.
     '''
     # create time array
     delta_t = 0.5
@@ -276,9 +282,9 @@ def compare_gas():
         (calc_f(C_CH4[0], C_N2O) - calc_f(C_CH4[0], C_N2O[0]))
 
     # calc temp changes for all
-    T_prime_CO2 = calc_T_prime(1, 300, Q_CO2, delta_t)
-    T_prime_CH4 = calc_T_prime(1, 300, Q_CH4, delta_t)
-    T_prime_N2O = calc_T_prime(1, 300, Q_N2O, delta_t)
+    T_prime_CO2 = calc_T_prime(lam, dz, Q_CO2, delta_t)
+    T_prime_CH4 = calc_T_prime(lam, dz, Q_CH4, delta_t)
+    T_prime_N2O = calc_T_prime(lam, dz, Q_N2O, delta_t)
 
     # plot
     plt.figure(figsize=(10,6))
@@ -293,10 +299,17 @@ def compare_gas():
     plt.savefig('GHGs.png')
 
 
-def equivalent_warming():
+def equivalent_warming(lam=1, dz=300):
     '''
     Finds the amount of CH4 and N2O required to warm the planet the same 
     amount as CO2, and prints those concentrations.
+
+    Parameters
+    ----------
+    lam : float, defaults to 1.
+        Climate sensitivity value
+    dz : float, defaults to 300
+        Depth of the mixed layer in meters.
     '''
     # create time array
     delta_t = 0.5
@@ -325,14 +338,14 @@ def equivalent_warming():
     C_N2O = C_2000 * np.exp(k_N2O * (time - time[0]))
 
     # Calculate temperature anomalies fo CO2
-    T_prime_CO2 = calc_T_prime(1, 300, Q_CO2, delta_t)
+    T_prime_CO2 = calc_T_prime(lam, dz, Q_CO2, delta_t)
 
     # equivalence scaling
     scale_CH4 = 1 # How much CH4 needed for CO2 equivalent forcing
     scale_N2O = 1 # How much N2O needed for CO2 equivalent forcing
 
     # initialize convergence criteria
-    tolerance = 0.1
+    tolerance = 0.05
     max_iterations = 1000
     iteration = 0
 
@@ -383,5 +396,7 @@ def equivalent_warming():
     plt.savefig('equiv_warming.png')
 
     # print conc values
-    print(f'equivalent 2023 CH4 concentration: {C_CH4_equiv[46]/1000} ppm')
-    print(f'equivalent 2023 N2O concentration: {C_N2O_equiv[46]/1000} ppm')
+    print(f'equivalent 2023 CH4 concentration: {np.round(C_CH4_equiv[46]/1000, 3)} ppm')
+    print(f'equivalent 2023 N2O concentration: {np.round(C_N2O_equiv[46]/1000, 3)} ppm')
+
+
