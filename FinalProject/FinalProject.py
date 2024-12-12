@@ -88,12 +88,12 @@ def test_case():
     time = np.arange(2000, 2101, delta_t)
     
     # create CO2 conc. array
-    C_2000 = 368.96 #ppm
-    C_2023 = 419.32 
+    C_2000 = 369.71 #ppm
+    C_2023 = 421.08 
 
     k = np.log(C_2023 / C_2000) / (2023-2000)
 
-    C_CO2 = 368.96 * np.exp(k * (time - time[0]))
+    C_CO2 = 369.71 * np.exp(k * (time - time[0]))
     # convert to radiative forcing
     Q_CO2 = 5.35 * np.log(C_CO2/C_CO2[0])
 
@@ -108,6 +108,9 @@ def test_case():
     plt.title('Temperature Change from 2000 to 2100')
 
     plt.savefig('test_case.png')
+
+    print(np.round(T_prime[:5], 4))
+    print(np.round(T_prime[-5:],4))
 
 def vary_time():
     '''
@@ -126,12 +129,12 @@ def vary_time():
         time = np.arange(2000, 2101, delta_t)
 
         # create CO2 conc. array
-        C_2000 = 368.96 #ppm
-        C_2023 = 419.32 
+        C_2000 = 369.71 #ppm
+        C_2023 = 421.08 
 
         k = np.log(C_2023 / C_2000) / (2023-2000)
         
-        C_CO2 = 368.96 * np.exp(k * (time - time[0]))
+        C_CO2 = 369.71 * np.exp(k * (time - time[0]))
         Q_CO2 = 5.35 * np.log(C_CO2 / C_CO2[0])
 
         # calculate T'(t)
@@ -162,12 +165,12 @@ def vary_parameters():
         time = np.arange(2000, 2101, delta_t)
 
         # exponential CO2 concentration
-        C_2000 = 368.96 #ppm
-        C_2023 = 419.32 
+        C_2000 = 369.71 #ppm
+        C_2023 = 421.08 
 
         k = np.log(C_2023 / C_2000) / (2023-2000)
 
-        C_CO2 = 368.96 * np.exp(k * (time - time[0]))
+        C_CO2 = 369.71 * np.exp(k * (time - time[0]))
         Q_CO2 = 5.35 * np.log(C_CO2 / C_CO2[0])
 
         # calculate T'(t)
@@ -194,12 +197,12 @@ def vary_parameters():
         time = np.arange(2000, 2101, delta_t)
 
         # exponential CO2 concentration
-        C_2000 = 368.96 #ppm
-        C_2023 = 419.32 
+        C_2000 = 369.71 #ppm
+        C_2023 = 421.08 
 
         k = np.log(C_2023 / C_2000) / (2023-2000)
 
-        C_CO2 = 368.96 * np.exp(k * (time - time[0]))
+        C_CO2 = 369.71 * np.exp(k * (time - time[0]))
         Q_CO2 = 5.35 * np.log(C_CO2 / C_CO2[0])
 
         # calculate T'(t)
@@ -243,8 +246,8 @@ def compare_gas():
     time = np.arange(2000, 2101, delta_t)
     
     # calc CO2 radiative forcing
-    C_2000 = 368.96 #ppm
-    C_2023 = 419.32 
+    C_2000 = 369.71 #ppm
+    C_2023 = 421.08 
 
     k = np.log(C_2023 / C_2000) / (2023-2000)
     C_CO2 = C_2000 * np.exp(k * (time - time[0]))
@@ -300,8 +303,8 @@ def equivalent_warming():
     time = np.arange(2000, 2101, delta_t)
     
     # calc CO2 radiative forcing
-    C_2000 = 368.96 #ppm
-    C_2023 = 419.32 
+    C_2000 = 369.71 #ppm
+    C_2023 = 421.08 
 
     k = np.log(C_2023 / C_2000) / (2023-2000)
     C_CO2 = C_2000 * np.exp(k * (time - time[0]))
